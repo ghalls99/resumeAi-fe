@@ -1,14 +1,16 @@
 <template>
-	<CreateAccount msg="Welcome to Your Vue.js App" />
+	<div class="container sign-up-form">
+		<SignInSignUp method="signup" />
+	</div>
 </template>
 
 <script>
-	import CreateAccount from './components/CreateAccount.vue';
+	import SignInSignUp from './components/SignInSignUp.vue';
 
 	export default {
 		name: 'App',
 		components: {
-			CreateAccount,
+			SignInSignUp,
 		},
 	};
 </script>
@@ -18,5 +20,11 @@
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
+	}
+	.sign-up-form {
+		display: flex;
+		min-height: 100vh;
+		flex-direction: column;
+		justify-content: center;
 	}
 </style>
