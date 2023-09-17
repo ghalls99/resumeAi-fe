@@ -1,17 +1,10 @@
 <template>
-	<div class="container sign-up-form">
-		<SignInSignUp method="signup" />
-	</div>
+	<router-view></router-view>
 </template>
 
 <script>
-	import SignInSignUp from './components/SignInSignUp.vue';
-
 	export default {
 		name: 'App',
-		components: {
-			SignInSignUp,
-		},
 	};
 </script>
 
@@ -20,11 +13,5 @@
 		font-family: Avenir, Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-	}
-	.sign-up-form {
-		display: flex;
-		min-height: 100vh;
-		flex-direction: column;
-		justify-content: center;
 	}
 </style>

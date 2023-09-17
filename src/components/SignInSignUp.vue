@@ -1,32 +1,40 @@
 <template>
-	<div class="row justify-content-center title">
-		<div class="col-md-5 col-10 my-4">
-			<h1 v-if="method === 'signup'">Sign Up</h1>
-			<h1 v-else>Sign In</h1>
-			<p v-if="method === 'signup'">Hey! Let's Get Started!</p>
-			<p v-else>Hey, Welcome Back.</p>
-		</div>
-	</div>
-	<div class="row justify-content-center">
-		<div class="col-md-5 col-10">
-			<div class="input col align-self-center section">
-				<label class="label-style">Email</label>
-				<input type="text" id="email" placeholder="garth@email.com" />
+	<div class="sign-up-form">
+		<div class="row justify-content-center title">
+			<div class="col-md-3 col-10 my-4">
+				<h1 v-if="method === 'signup'">Sign Up</h1>
+				<h1 v-else>Sign In</h1>
+				<p v-if="method === 'signup'">Hey! Let's Get Started!</p>
+				<p v-else>Hey, Welcome Back!</p>
 			</div>
 		</div>
-	</div>
-	<div class="row justify-content-center section">
-		<div class="col-md-5 col-10">
-			<div class="input col align-self-center">
-				<label class="label-style">Password</label>
-				<input type="text" id="password" placeholder="SuperSecretPassword" />
+		<div class="row justify-content-center">
+			<div class="col-md-3 col-10">
+				<div class="input col align-self-center section">
+					<label class="label-style">Email</label>
+					<input type="text" id="email" placeholder="garth@email.com" />
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row justify-content-center section">
-		<div class="col-md-5 col-10">
-			<div class="input col align-self-center">
-				<button type="button" class="btn btn-primary">Create Account</button>
+		<div class="row justify-content-center section">
+			<div class="col-md-3 col-10">
+				<div class="input col align-self-center">
+					<label class="label-style">Password</label>
+					<input type="text" id="password" placeholder="SuperSecretPassword" />
+				</div>
+			</div>
+		</div>
+		<div class="row justify-content-center section">
+			<div class="col-md-3 col-10">
+				<div class="input col align-self-center">
+					<button
+						type="button"
+						class="btn btn-primary"
+						v-if="method === 'signup'">
+						Create Account
+					</button>
+					<button type="button" class="btn btn-primary" v-else>Sign In</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -77,5 +85,11 @@
 	/* Microsoft Edge */
 	::-ms-input-placeholder {
 		color: #a9adc1;
+	}
+	.sign-up-form {
+		display: flex;
+		min-height: 100vh;
+		flex-direction: column;
+		justify-content: center;
 	}
 </style>
