@@ -214,9 +214,6 @@
 		padding: 15px;
 	}
 
-	h1 {
-		color: #e56258;
-	}
 	.btn-primary {
 		border: none;
 		background-color: #e56258;
