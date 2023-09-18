@@ -1,98 +1,91 @@
 <template>
 	<div class="container">
-		<div class="row">
-			<div class="col">
-				<h1>Contact Info</h1>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="firstName" placeholder="First Name" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="lastName" placeholder="Last Name" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="email" placeholder="Email" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="phone" placeholder="Phone Number" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="role" placeholder="Profession/Role" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="address" placeholder="Address" />
-			</div>
-		</div>
-		<div class="row my-5 bio-section">
-			<div class="col-12">
-				<h1>Bio</h1>
-			</div>
-			<div class="col mt-5">
-				<textarea
-					class="large-textarea"
-					rows="10"
-					placeholder="Tell us about yourself"></textarea>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-12">
-				<h1>Job History</h1>
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="company" placeholder="Company Name" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="companyLocation" placeholder="Location" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="jobRole" placeholder="Role" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="jobYearStarted" placeholder="Year Started" />
-			</div>
-			<!-- Add 'Currently here? checkbox or something' also make this a component -->
-			<div class="col-12 mt-5">
-				<textarea
-					class="large-textarea"
-					rows="10"
-					placeholder="Provide your experiences about the job. Thorough details will provide better results for resume generation."></textarea>
-			</div>
-		</div>
-		<div class="row mt-5">
-			<div class="col-12">
-				<h1>Education</h1>
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="schoolName" placeholder="School" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="schoolLocation" placeholder="Location" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="major" placeholder="Major" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="degree" placeholder="Degree" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input type="text" id="schoolYearStarted" placeholder="Year Started" />
-			</div>
-			<div class="col-6 d-flex flex-column mt-4">
-				<input
-					type="text"
-					id="schoolYearCompleted"
-					placeholder="Year Completed" />
-			</div>
-			<!-- Add 'Currently here? checkbox or something' also make this a component -->
-			<div class="col-12 mt-5">
-				<textarea
-					class="large-textarea"
-					rows="10"
-					placeholder="Provide details about your experiences. Thorough details will provide better results for resume generation."></textarea>
-			</div>
-		</div>
+		<FormContainer
+			:allowAdditionalSections="false"
+			sectionName="Contact Info"
+			:inputs="[
+				{name: 'firstName', placeholder: 'First Name', inputType: 'input'},
+				{name: 'lastName', placeholder: 'Last Name', inputType: 'input'},
+				{name: 'email', placeholder: 'Email', inputType: 'input'},
+				{
+					name: 'phone',
+					placeholder: 'Phone Number',
+					inputType: 'input',
+				},
+				{
+					name: 'role',
+					placeholder: 'Profession/Role',
+					inputType: 'input',
+				},
+				{
+					name: 'address',
+					placeholder: 'Address',
+					inputType: 'input',
+				},
+			]"
+			@update-section-data="updateSectionData" />
+		<FormContainer
+			:allowAdditionalSections="false"
+			sectionName="Bio"
+			:inputs="[
+				{
+					name: 'bio',
+					placeholder: 'Tell us about yourself',
+					inputType: 'textarea',
+				},
+			]"
+			@update-section-data="updateSectionData" />
+		<FormContainer
+			:allowAdditionalSections="true"
+			sectionName="Job History"
+			:inputs="[
+				{name: 'company', placeholder: 'Company Name', inputType: 'input'},
+				{name: 'companyLocation', placeholder: 'Location', inputType: 'input'},
+				{name: 'jobRole', placeholder: 'Role', inputType: 'input'},
+				{
+					name: 'jobYearStarted',
+					placeholder: 'Year Started',
+					inputType: 'input',
+				},
+				{
+					name: 'jobYearEnded',
+					placeholder: 'Year Ended',
+					inputType: 'input',
+				},
+				{
+					name: 'jobDetails',
+					placeholder:
+						'Provide your experiences about the job. Thorough details will provide better results for resume generation.',
+					inputType: 'textarea',
+				},
+			]"
+			@update-section-data="updateSectionData" />
+		<FormContainer
+			:allowAdditionalSections="true"
+			sectionName="Education"
+			:inputs="[
+				{name: 'schoolName', placeholder: 'School', inputType: 'input'},
+				{name: 'schoolLocation', placeholder: 'Location', inputType: 'input'},
+				{name: 'major', placeholder: 'Major', inputType: 'input'},
+				{name: 'degree', placeholder: 'Degree', inputType: 'input'},
+				{
+					name: 'schoolYearStarted',
+					placeholder: 'Year Started',
+					inputType: 'input',
+				},
+				{
+					name: 'schoolYearCompleted',
+					placeholder: 'Year Completed',
+					inputType: 'input',
+				},
+				{
+					name: 'schoolDetails',
+					placeholder:
+						'Provide details about your experiences. Thorough details will provide better results for resume generation.',
+					inputType: 'textarea',
+				},
+			]"
+			@update-section-data="updateSectionData" />
 		<div class="row mt-5 mb-5">
 			<div class="col">
 				<h1>Skills</h1>
@@ -116,22 +109,72 @@
 				</div>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col mb-5">
+				<button
+					type="button"
+					class="btn btn-primary px-5 py-3"
+					@click="submit()">
+					Save
+				</button>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
+	import FormContainer from '../components/FormContainer.vue';
+
 	export default {
 		data() {
 			return {
 				newSkill: '',
 				skills: [],
+				resumeData: {},
 			};
+		},
+		components: {
+			FormContainer,
 		},
 		name: 'ResumeForm',
 		props: {
 			method: String,
 		},
 		methods: {
+			toCamelCase(str) {
+				return str
+					.replace(/[^a-zA-Z0-9 ]/g, '') // Remove any non-alphanumeric or non-space characters
+					.replace(/\s(.)/g, function ($1) {
+						return $1.toUpperCase();
+					}) // Convert the first letter after each space to uppercase
+					.replace(/\s/g, '') // Remove spaces
+					.replace(/^(.)/, function ($1) {
+						return $1.toLowerCase();
+					}); // Convert the first letter to lowercase
+			},
+			updateSectionData({id, section, data}) {
+				const camelCaseSection = this.toCamelCase(section);
+
+				if (!this.resumeData[camelCaseSection]) {
+					this.resumeData[camelCaseSection] = [];
+				}
+
+				const existingIndex = this.resumeData[camelCaseSection].findIndex(
+					(s) => s.id === id,
+				);
+
+				if (existingIndex > -1) {
+					this.resumeData[camelCaseSection][existingIndex].data = data;
+				} else {
+					const newEntry = {
+						id,
+						data: data,
+					};
+					this.resumeData[camelCaseSection].push(newEntry);
+				}
+				console.log(JSON.stringify(this.resumeData));
+			},
+
 			addSkill() {
 				console.log('here');
 				console.log(this.newSkill);
@@ -154,6 +197,9 @@
 				};
 				this.skills.push(newSkillInput);
 			},
+			submit() {
+				console.log(JSON.stringify(this.resumeData));
+			},
 		},
 	};
 </script>
@@ -166,5 +212,14 @@
 		border: 1px solid #ccc;
 		border-radius: 5px;
 		padding: 15px;
+	}
+
+	h1 {
+		color: #e56258;
+	}
+	.btn-primary {
+		border: none;
+		background-color: #e56258;
+		padding: 12px;
 	}
 </style>
