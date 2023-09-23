@@ -1,124 +1,132 @@
 <template>
-	<div class="sign-up-form">
-		<div class="row justify-content-center title">
-			<div class="col-md-3 col-10 my-4">
-				<h1>Sign Up</h1>
-				<p>Hey! Let's Get Started!</p>
-			</div>
-		</div>
-		<div class="row justify-content-center">
-			<div class="col-md-3 col-10">
-				<div class="input col align-self-center section">
-					<label class="label-style">Email</label>
-					<input
-						v-model="email"
-						type="text"
-						id="email"
-						placeholder="garth@email.com" />
-				</div>
-			</div>
-		</div>
-		<div class="row justify-content-center section">
-			<div class="col-md-3 col-10">
-				<div class="input col align-self-center">
-					<label class="label-style">Password</label>
-					<input
-						v-model="password"
-						type="text"
-						id="password"
-						placeholder="SuperSecretPassword" />
-				</div>
-			</div>
-		</div>
-		<div class="row justify-content-center section">
-			<div class="col-md-3 col-10">
-				<div class="input col align-self-center">
-					<button type="button" class="btn btn-primary" @click="register()">
-						Create Account
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
+  <div class="sign-up-form">
+    <RegisterComponent v-if="!isSignedIn" @register="handleRegister" />
+    <VerificationComponent
+      v-else-if="isSignedIn"
+      @verify="handleVerification"
+    />
+  </div>
 </template>
 
 <script>
-	import {Auth} from 'aws-amplify';
-	import {router} from 'vue-router';
+  import { Auth } from "aws-amplify";
+  import { useRouter } from "vue-router";
+  import RegisterComponent from "../components/RegisterComponent.vue";
+  import VerificationComponent from "../components/VerificationComponent.vue";
+  import { ref, onMounted } from "vue";
+  export default {
+    setup() {
+      const router = useRouter();
+      const emailForVerification = ref("");
 
-	export default {
-		name: 'RegisterPage',
-		data() {
-			return {
-				email: '',
-				password: '',
-			};
-		},
-		props: {
-			method: String,
-		},
-		methods: {
-			async register() {
-				const user = Auth.currentAuthenticatedUser();
+      const isSignedIn = ref(false);
+      const isVerified = ref(false);
 
-				if (user) {
-					router;
-				}
-				try {
-					await Auth.signUp({
-						username: this.email,
-						password: this.password,
-					});
-					console.log('User signed in.');
-				} catch (error) {
-					alert(error.message);
-				}
-			},
-		},
-	};
+      onMounted(async () => {
+        try {
+          const user = await Auth.currentAuthenticatedUser();
+          if (user) {
+            router.push("/");
+            // Add logic to check if user is verified
+            // isVerified.value = ...
+          }
+        } catch (error) {
+          if (error === "The user is not authenticated") {
+            router.push("/register");
+          }
+        }
+      });
+
+      function handleRouting(route) {
+        router.push(`${route}`);
+      }
+
+      return {
+        isSignedIn,
+        isVerified,
+        emailForVerification,
+        handleRouting,
+      };
+    },
+    components: {
+      RegisterComponent, // <-- Register the component here
+      VerificationComponent,
+    },
+    name: "RegisterPage",
+    props: {
+      method: String,
+    },
+    methods: {
+      async handleRegister({ email, password }) {
+        try {
+          await Auth.signUp(
+            {
+              username: email,
+              password: password,
+            },
+            { autoSignIn: { enabled: true } }
+          );
+          console.log("User signed up.");
+          this.emailForVerification = email;
+          this.isSignedIn = true;
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
+      },
+      async handleVerification({ code }) {
+        try {
+          console.log(this.emailForVerification);
+          await Auth.confirmSignUp(this.emailForVerification, code);
+          this.handleRouting("/");
+        } catch (error) {
+          alert(error);
+        }
+      },
+    },
+  };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-	.section {
-		padding-top: 20px;
-	}
-	.label-style {
-		margin: 0;
-	}
-	.input {
-		padding: 0;
-		display: flex;
-		flex-direction: column;
-	}
-	button {
-		padding: 10px;
-	}
-	input {
-		border-radius: 4px;
-		border-color: #e6e6e6;
-		border-width: 2px;
-		border-style: solid;
-		padding: 8px 15px;
-	}
-	::placeholder {
-		color: #a9adc1;
-		opacity: 1; /* Important for Firefox */
-	}
+  .section {
+    padding-top: 20px;
+  }
+  .label-style {
+    margin: 0;
+  }
+  .input {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  button {
+    padding: 10px;
+  }
+  input {
+    border-radius: 4px;
+    border-color: #e6e6e6;
+    border-width: 2px;
+    border-style: solid;
+    padding: 8px 15px;
+  }
+  ::placeholder {
+    color: #a9adc1;
+    opacity: 1; /* Important for Firefox */
+  }
 
-	/* Internet Explorer, Edge */
-	:-ms-input-placeholder {
-		color: #a9adc1;
-	}
+  /* Internet Explorer, Edge */
+  :-ms-input-placeholder {
+    color: #a9adc1;
+  }
 
-	/* Microsoft Edge */
-	::-ms-input-placeholder {
-		color: #a9adc1;
-	}
-	.sign-up-form {
-		display: flex;
-		min-height: 100vh;
-		flex-direction: column;
-		justify-content: center;
-	}
+  /* Microsoft Edge */
+  ::-ms-input-placeholder {
+    color: #a9adc1;
+  }
+  .sign-up-form {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: center;
+  }
 </style>
