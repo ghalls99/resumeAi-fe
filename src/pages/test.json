@@ -1,0 +1,29 @@
+{
+  "contactInfo": [
+    {
+      "data": [
+        {
+          "id": "_osivulr6a",
+          "data": {
+            "firstName": "TESTST",
+            "lastName": "Halls",
+            "address": "3958 North Summer Ridge Road",
+            "phone": "8014251650",
+            "email": "garrett@hallsnet.com"
+          }
+        }
+      ]
+    }
+  ],
+  "bio": [
+    { "data": [{ "id": "_btwqcuwd6", "data": { "bio": "THIS IS A TEST" } }] }
+  ],
+  "jobHistory": [
+    {
+      "data": [
+        { "id": "_tvyr09c8x", "data": { "company": "JOBBBBBB" } },
+        { "id": "_4d2h1n1r5", "data": { "company": "ANOTHERJOB" } }
+      ]
+    }
+  ]
+}

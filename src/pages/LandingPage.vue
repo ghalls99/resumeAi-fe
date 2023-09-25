@@ -86,6 +86,12 @@
       min-width: 1200px;
     }
   }
+
+  @media (min-width: 1200px) {
+    img {
+      width: 900px;
+    }
+  }
   @media (min-width: 992px) {
     .container {
       max-width: 1627px;
@@ -104,7 +110,7 @@
   }
 
   img {
-    width: 900px;
+    width: 650px;
   }
 
   @media (max-width: 576px) {

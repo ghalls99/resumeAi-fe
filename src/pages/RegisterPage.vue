@@ -1,9 +1,15 @@
 <template>
   <div class="sign-up-form">
-    <RegisterComponent v-if="!isSignedIn" @register="handleRegister" />
+    <RegisterComponent
+      v-if="!isSignedIn"
+      @register="handleRegister"
+      @resendCode="resendCode"
+    />
     <VerificationComponent
       v-else-if="isSignedIn"
       @verify="handleVerification"
+      :did-send-code="didSendCode"
+      @resend="resendCode"
     />
   </div>
 </template>
@@ -21,9 +27,12 @@
 
       const isSignedIn = ref(false);
       const isVerified = ref(false);
+      let didSendCode = ref(false);
 
       onMounted(async () => {
         try {
+          console.log("mount");
+          console.log(didSendCode.value);
           const user = await Auth.currentAuthenticatedUser();
           if (user) {
             router.push("/");
@@ -41,11 +50,24 @@
         router.push(`${route}`);
       }
 
+      async function resendCode() {
+        try {
+          console.log(emailForVerification);
+          await Auth.resendSignUp(emailForVerification.value);
+          didSendCode = true;
+          console.log("Successfully sent code");
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
+      }
+
       return {
         isSignedIn,
         isVerified,
         emailForVerification,
         handleRouting,
+        didSendCode,
+        resendCode,
       };
     },
     components: {

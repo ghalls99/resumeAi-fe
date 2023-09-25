@@ -38,6 +38,10 @@
           <button type="button" class="btn btn-primary" @click="signIn()">
             Sign In
           </button>
+          <p class="py-3">
+            Don't have an account?
+            <a href="register" style="color: #e56258">Create one now</a>
+          </p>
         </div>
       </div>
     </div>
@@ -61,7 +65,7 @@
             username: email.value,
             password: password.value,
           });
-          router.push({ path: "/" });
+          router.push("/");
           console.log("User signed in.");
         } catch (error) {
           console.log(JSON.stringify(error));
