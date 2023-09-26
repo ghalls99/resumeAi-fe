@@ -2,6 +2,10 @@
 <!--Need to fix skills section-->
 <template>
   <div class="container">
+    <div class="my-5">
+      <h1>Your resume</h1>
+      <p>Set, adjust, and edit your resume here.</p>
+    </div>
     <FormContainer
       :allowAdditionalSections="false"
       sectionName="Contact Info"
@@ -105,17 +109,17 @@
       @update-section-data="updateSectionData"
     />
     <div class="row mt-5 mb-5">
-      <div class="col">
+      <div class="col-md-6">
         <h1>Skills</h1>
         <input v-model="newSkill" id="skill" placeholder="Enter Skill" />
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary p-2"
           @click="addSkill(newSKill)"
         >
-          Add Skill
+          Add
         </button>
-        <div class="row mr-5 gx-3">
+        <div class="row mr-3">
           <div
             v-for="(skill, index) in skills"
             :key="index"
@@ -143,7 +147,7 @@
           class="btn btn-primary px-5 py-3"
           @click="submit()"
         >
-          Save
+          Save All Changes
         </button>
       </div>
     </div>
@@ -181,6 +185,12 @@
 
       if (res.data) {
         this.userData = res.data || {};
+
+        if (res.data.skills) {
+          this.skills.push(...res.data.skills);
+        }
+
+        console.log(JSON.stringify(this.userData));
       }
     },
     components: {
@@ -244,17 +254,17 @@
           placeholder: this.newSkill.trim(),
         };
         this.skills.push(newSkillInput);
+        this.newSkill = "";
       },
       removeSkill(index) {
         this.skills.splice(index, 1);
         console.log(this.skills);
       },
       async submit() {
-        console.log("I am here now", JSON.stringify(this.resumeData));
         const user = await Auth.currentAuthenticatedUser();
         const res = await axios.post(
           "https://zoo69sfavg.execute-api.us-east-1.amazonaws.com/dev/upload-resume",
-          { ...this.resumeData, username: user.username },
+          { ...this.resumeData, username: user.username, skills: this.skills },
           {
             headers: {
               "Content-Type": "application/json",

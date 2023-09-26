@@ -1,29 +1,46 @@
 {
-  "contactInfo": [
+  "education": [
     {
       "data": [
         {
-          "id": "_osivulr6a",
-          "data": {
-            "firstName": "TESTST",
-            "lastName": "Halls",
-            "address": "3958 North Summer Ridge Road",
-            "phone": "8014251650",
-            "email": "garrett@hallsnet.com"
-          }
+          "data": { "schoolName": "SCHOOL", "schoolLocation": "LOCATION" },
+          "id": "_xja8dv000"
         }
       ]
     }
   ],
   "bio": [
-    { "data": [{ "id": "_btwqcuwd6", "data": { "bio": "THIS IS A TEST" } }] }
-  ],
-  "jobHistory": [
     {
       "data": [
-        { "id": "_tvyr09c8x", "data": { "company": "JOBBBBBB" } },
-        { "id": "_4d2h1n1r5", "data": { "company": "ANOTHERJOB" } }
+        {
+          "data": { "bio": "Full stack engineer with 4+ years of experience." },
+          "id": "_8muqd6wvp"
+        }
       ]
     }
+  ],
+  "contact_info": [
+    {
+      "data": [
+        {
+          "data": {
+            "firstName": "Garrett",
+            "lastName": "Halls",
+            "address": "3958 North Summer Ridge Road",
+            "role": "Software Engineer",
+            "phone": "8014251650",
+            "email": "garrett@hallsnet.com"
+          },
+          "id": "_bie8i9wrp"
+        }
+      ]
+    }
+  ],
+  "timestamp": "1695595803221",
+  "username": "717bb540-4081-700a-7ccb-cde62d841c90",
+  "resume_updated_at": 1695747956214,
+  "skills": [{ "colSize": 3, "placeholder": "test" }],
+  "job_history": [
+    { "data": [{ "data": { "company": "TEST COMPANY" }, "id": "_ia8lybkst" }] }
   ]
 }

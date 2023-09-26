@@ -51,10 +51,18 @@
 <script>
   import { Auth } from "aws-amplify";
   import { useRouter } from "vue-router";
-  import { ref } from "vue";
+  import { ref, onMounted } from "vue";
 
   export default {
     setup() {
+      onMounted(async () => {
+        try {
+          await Auth.currentAuthenticatedUser();
+          router.push("/");
+        } catch (error) {
+          console.log("not logged in");
+        }
+      });
       const email = ref("");
       const password = ref("");
       const router = useRouter();
@@ -65,7 +73,7 @@
             username: email.value,
             password: password.value,
           });
-          router.push("/");
+          window.location.reload();
           console.log("User signed in.");
         } catch (error) {
           console.log(JSON.stringify(error));

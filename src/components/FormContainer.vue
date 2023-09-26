@@ -24,6 +24,7 @@
           Delete
         </button>
       </div>
+
       <FormSection
         :id="item.id"
         :sectionName="sectionName"
