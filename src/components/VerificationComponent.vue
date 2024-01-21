@@ -6,7 +6,7 @@
   const props = defineProps({ didSendCode: Boolean });
 
   watchEffect(() => {
-    console.log("changes", props.didSendCode);
+    console.log("Sending Code.", props.didSendCode);
   });
 
   const verify = async () => {
