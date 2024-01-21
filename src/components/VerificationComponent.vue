@@ -1,22 +1,34 @@
 <script setup>
-  import { ref, defineEmits, defineProps, watchEffect } from "vue";
+import { ref, defineProps } from "vue";
+import { Auth } from "aws-amplify";
 
-  const code = ref("");
-  const emit = defineEmits(["verify", "resendCode"]);
-  const props = defineProps({ didSendCode: Boolean });
 
-  watchEffect(() => {
-    console.log("Sending Code.", props.didSendCode);
-  });
+const code = ref("");
+let resentCode = ref(false)
 
-  const verify = async () => {
-    emit("verify", {
-      code: code.value,
-    });
-  };
-  const resendCode = async () => {
-    emit("resend");
-  };
+const props = defineProps({ emailForVerification: String });
+
+const verify = async () => {
+  try {
+    console.log(this.emailForVerification);
+    await Auth.confirmSignUp(this.emailForVerification, code);
+    this.handleRouting("/signIn");
+  } catch (error) {
+    alert(error);
+  }
+};
+const resendCode = async () => {
+  try {
+    resentCode.value = false
+    console.log(props.emailForVerification);
+    await Auth.resendSignUp(props.emailForVerification);
+    resentCode.value = true;
+    console.log("Successfully sent code");
+  } catch (error) {
+    console.log(JSON.stringify(error));
+  }
+
+};
 </script>
 
 <template>
@@ -24,7 +36,7 @@
     <div class="row justify-content-center title">
       <div class="col-md-3 col-10 my-2">
         <h1>Verify</h1>
-        <p>We sent a verification code to your email {{ props.didSendCode }}</p>
+        <p>We sent a verification code to your email {{ resentCode }}</p>
       </div>
     </div>
     <div class="row justify-content-center">
@@ -56,45 +68,49 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .section {
-    padding-top: 20px;
-  }
-  .label-style {
-    margin: 0;
-  }
-  .input {
-    display: flex;
-    flex-direction: column;
-  }
+.section {
+  padding-top: 20px;
+}
 
-  input {
-    border-radius: 4px;
-    border-color: #e6e6e6;
-    border-width: 2px;
-    border-style: solid;
-  }
-  ::placeholder {
-    color: #a9adc1;
-    opacity: 1; /* Important for Firefox */
-  }
+.label-style {
+  margin: 0;
+}
 
-  a {
-    color: #e56258;
-  }
+.input {
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Internet Explorer, Edge */
-  :-ms-input-placeholder {
-    color: #a9adc1;
-  }
+input {
+  border-radius: 4px;
+  border-color: #e6e6e6;
+  border-width: 2px;
+  border-style: solid;
+}
 
-  /* Microsoft Edge */
-  ::-ms-input-placeholder {
-    color: #a9adc1;
-  }
-  .verify-container {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-    justify-content: center;
-  }
-</style>
+::placeholder {
+  color: #a9adc1;
+  opacity: 1;
+  /* Important for Firefox */
+}
+
+a {
+  color: #e56258;
+}
+
+/* Internet Explorer, Edge */
+:-ms-input-placeholder {
+  color: #a9adc1;
+}
+
+/* Microsoft Edge */
+::-ms-input-placeholder {
+  color: #a9adc1;
+}
+
+.verify-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  justify-content: center;
+}</style>

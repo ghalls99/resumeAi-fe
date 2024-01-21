@@ -78,7 +78,7 @@
         } catch (error) {
           console.log(JSON.stringify(error));
           if (error.code === "UserNotConfirmedException") {
-            router.push({ path: "/verify" });
+            router.push({ path: "/verify", query: { email: email.value } });
           }
         }
       }
