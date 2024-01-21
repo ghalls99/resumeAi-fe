@@ -10,7 +10,7 @@
   onMounted(async () => {
     try {
       await Auth.currentAuthenticatedUser();
-      console.log("here");
+      console.log('validating sign in');
       isSignedIn.value = true;
       console.log(isSignedIn.value);
     } catch (error) {
@@ -33,12 +33,12 @@
 <template>
   <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light justify-content-lg-around">
-      <a class="navbar-brand" href="#">ResumeAI</a>
+      <a class="navbar-brand" href="/">ResumeAI</a>
       <button
         class="navbar-toggler"
         type="button"
-        data-toggle="collapse"
-        data-target="#navbarText"
+        data-bs-target="#navbarText" 
+        data-bs-toggle="collapse"
         aria-controls="navbarText"
         aria-expanded="false"
         aria-label="Toggle navigation"
@@ -50,7 +50,7 @@
           <li class="nav-item">
             <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
           </li>
-          <li class="nav-item">
+          <li v-if="isSignedIn" class="nav-item">
             <a class="nav-link" href="/resume-builder">Account</a>
           </li>
         </ul>
