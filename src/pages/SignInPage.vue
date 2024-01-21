@@ -77,7 +77,7 @@
           console.log("User signed in.");
         } catch (error) {
           console.log(JSON.stringify(error));
-          if (error === "The user is not authenticated") {
+          if (error.code === "UserNotConfirmedException") {
             router.push({ path: "/verify" });
           }
         }
