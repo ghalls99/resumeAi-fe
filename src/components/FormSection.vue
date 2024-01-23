@@ -1,4 +1,5 @@
 <template>
+  <!--Iterate through each item in the array to spit out what input is desired-->
   <div
     v-for="input in inputs"
     :class="input.inputType === 'input' ? 'col-6' : 'col-12'"
