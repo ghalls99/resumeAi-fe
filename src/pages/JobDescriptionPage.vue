@@ -25,6 +25,8 @@
 
 			const submit = async () => {
 				const user = await Auth.currentAuthenticatedUser();
+                // TO DO: Figure out why the hell the response is not returning. Getting 500. Suspect it has something to do with the lambda request response as it was set up to be an event process on the BE.
+                // Taking a look tomorrow.
 				const params = {
 					method: 'post',
 					url: 'https://zoo69sfavg.execute-api.us-east-1.amazonaws.com/dev/process-job',
@@ -69,7 +71,7 @@
 	}
 
 	.large-textarea {
-		width: 70%;
+		width: 100%;
 		/* Increased width percentage */
 		max-width: 800px;
 		/* Adjusted max-width */
