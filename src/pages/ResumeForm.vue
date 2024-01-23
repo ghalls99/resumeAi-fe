@@ -1,5 +1,6 @@
 <!--Need to add ability to prefill user form data.-->
 <!--Need to fix skills section-->
+<!--This whole thing is a burning tire fire but it works and is dynamic so whoever tries to optimize this good luck idiot-->
 <template>
   <div class="container">
     <div class="my-5">
@@ -161,7 +162,6 @@ export default {
     method: String,
   },
   methods: {
-    // This whole thing sucks and was incredibly tedious to make.
     toCamelCase(str) {
       return str
         .replace(/[^a-zA-Z0-9 ]/g, "") // Remove any non-alphanumeric or non-space characters

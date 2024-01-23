@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage.vue';
 import ResumeForm from './pages/ResumeForm.vue';
 import SignInPage from './pages/SignInPage.vue';
 import VerificationPage from './pages/VerificationPage.vue';
+import JobDescriptionPage from './pages/JobDescriptionPage.vue';
 
 const routes = [
 	{path: '/register', component: RegisterPage},
@@ -15,6 +16,7 @@ const routes = [
 		component: VerificationPage,
 		props: (route) => ({email: route.query.email}),
 	},
+	{path: '/submit-job-description', component: JobDescriptionPage},
 ];
 
 const router = createRouter({

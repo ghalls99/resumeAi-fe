@@ -111,8 +111,8 @@ export default {
     },
     findInitialData(index) {
       if (this.initialData && Array.isArray(this.initialData)) {
-        //Looks through the initial data array and populates the data at the correct index for consistency
-        // Didn't want to jarr the user by switching up where their sections each time 
+        // Looks through the initial data array and populates the data at the correct index for consistency
+        // Didn't want to jarr the user by switching up where their section order each time 
         return this.initialData[0]?.data[index]?.data
           ? this.initialData[0].data[index].data
           : null;
