@@ -29,6 +29,7 @@
         formData: {},
       };
     },
+    emits: ['update-form-data'],
     name: "FormSection",
     props: {
       sectionName: String,

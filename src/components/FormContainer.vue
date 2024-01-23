@@ -30,6 +30,7 @@ import FormSection from "./FormSection.vue";
 export default {
   data() {
     return {
+      //Initialize for at least one section
       section: [{ id: this.generateId() }],
       sectionFormData: [],
     };
@@ -45,16 +46,17 @@ export default {
     initialData: Array, // Add this
   },
   watch: {
-    initialData: {
-      immediate: true,
-      handler(newValue) {
-        if (newValue && Array.isArray(newValue)) {
-          this.section = newValue[0].data.map(() => {
-            return { id: this.generateId() };
-          });
-        }
-      },
+  // Maps through the initialData array and generates a new id for each section
+  initialData: {
+    immediate: true,  
+    handler(newValue) {    
+      if (newValue && Array.isArray(newValue)) {
+        this.section = newValue[0].data.map(() => {
+          return { id: this.generateId() };
+        });
+      }
     },
+  },
     // sectionFormData: A watcher for changes in section form data.
     sectionFormData: {
       handler(newValue) {
@@ -97,19 +99,20 @@ export default {
       return "_" + Math.random().toString(36).substr(2, 9);
     },
     updateFormData({ id, data }) {4
-      // Look 
+      // finds the id of the section being updated and pushes the changes back up to parent
       let section = this.sectionFormData.find((section) => section.id === id);
       if (section) {
+        //Takes the new input data from the selected input box and combines it with the rest of the overall section data
         section.data = { ...section.data, ...data };
       } else {
+        //There is no section that has been creatd. Create one now
         this.sectionFormData.push({ id, data });
       }
     },
     findInitialData(index) {
-      // Check if initialData prop exists and is an array
-
       if (this.initialData && Array.isArray(this.initialData)) {
-        // Return the data at the given index if it exists
+        //Looks through the initial data array and populates the data at the correct index for consistency
+        // Didn't want to jarr the user by switching up where their sections each time 
         return this.initialData[0]?.data[index]?.data
           ? this.initialData[0].data[index].data
           : null;

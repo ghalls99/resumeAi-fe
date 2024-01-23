@@ -6,6 +6,7 @@
       <h1>Your resume</h1>
       <p>Set, adjust, and edit your resume here.</p>
     </div>
+    <!--Dynamically handle desired input sections. Allows for future scalabilty of different sections-->
     <FormContainer :allowAdditionalSections="false" sectionName="Contact Info" :initialData="userData.contact_info"
       :inputs="[
         {
@@ -183,11 +184,13 @@ export default {
       }
 
       // Find the index of the existing entry in the resumeData section by matching the id.
+      // This accounts for repulling data and data deletion
       const existingIndex = this.resumeData[camelCaseSection].findIndex(
         (s) => s.id === id
       );
 
       // If an existing entry is found, update its data.
+      // Prevents overwrite of different sections
       if (existingIndex > -1) {
         this.resumeData[camelCaseSection][existingIndex].data = data;
       } else {
