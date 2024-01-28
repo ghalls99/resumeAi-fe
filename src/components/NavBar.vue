@@ -10,7 +10,7 @@
   onMounted(async () => {
     try {
       await Auth.currentAuthenticatedUser();
-      console.log('validating sign in');
+      console.log("validating sign in");
       isSignedIn.value = true;
       console.log(isSignedIn.value);
     } catch (error) {
@@ -37,7 +37,7 @@
       <button
         class="navbar-toggler"
         type="button"
-        data-bs-target="#navbarText" 
+        data-bs-target="#navbarText"
         data-bs-toggle="collapse"
         aria-controls="navbarText"
         aria-expanded="false"
@@ -52,6 +52,11 @@
           </li>
           <li v-if="isSignedIn" class="nav-item">
             <a class="nav-link" href="/resume-builder">Account</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/submit-job-description"
+              >Generate Resume<span class="sr-only"></span
+            ></a>
           </li>
         </ul>
         <button
