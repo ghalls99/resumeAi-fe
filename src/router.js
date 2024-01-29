@@ -5,6 +5,7 @@ import ResumeForm from './pages/ResumeForm.vue';
 import SignInPage from './pages/SignInPage.vue';
 import VerificationPage from './pages/VerificationPage.vue';
 import JobDescriptionPage from './pages/JobDescriptionPage.vue';
+import ResumeEditor from './pages/ResumeEditor.vue';
 
 const routes = [
 	{path: '/register', component: RegisterPage},
@@ -17,6 +18,7 @@ const routes = [
 		props: (route) => ({email: route.query.email}),
 	},
 	{path: '/submit-job-description', component: JobDescriptionPage},
+	{path: '/resume-editor', component: ResumeEditor},
 ];
 
 const router = createRouter({
