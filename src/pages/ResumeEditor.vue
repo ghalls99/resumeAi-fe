@@ -1,140 +1,96 @@
 <template>
-    <div class="resume-container">
-        <div class="resume-div">
-            <grid-layout v-model:layout="layout" :col-num="12" :row-height="30" :is-draggable="draggable"
-                :is-resizable="resizable" :vertical-compact="true" :use-css-transforms="true">
-                <grid-item v-for="item in layout" :key="item.i" :static="item.static" :x="item.x" :y="item.y" :w="item.w"
-                    :h="item.h" :i="item.i">
-                    <span class="text">{{ itemTitle(item) }}</span>
-                </grid-item>
-            </grid-layout>
-        </div>
+    <div class="fabric-canvas-wrapper">
+        <canvas id="theCanvas"></canvas>
     </div>
 </template>
 
-<script>
-import { GridLayout, GridItem } from "vue-grid-layout-v3"
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue';
+import { fabric } from 'fabric';
 
-export default {
-    components: {
-        GridLayout,
-        GridItem
-    },
-    data() {
-        return {
-            layout: [
-                { "x": 0, "y": 0, "w": 2, "h": 2, "i": "0", static: false },
-                { "x": 2, "y": 0, "w": 2, "h": 4, "i": "1", static: true },
-                { "x": 4, "y": 0, "w": 2, "h": 5, "i": "2", static: false },
-                { "x": 6, "y": 0, "w": 2, "h": 3, "i": "3", static: false },
-                { "x": 8, "y": 0, "w": 2, "h": 3, "i": "4", static: false },
-                { "x": 10, "y": 0, "w": 2, "h": 3, "i": "5", static: false },
-                { "x": 0, "y": 5, "w": 2, "h": 5, "i": "6", static: false },
-                { "x": 2, "y": 5, "w": 2, "h": 5, "i": "7", static: false },
-                { "x": 4, "y": 5, "w": 2, "h": 5, "i": "8", static: false },
-                { "x": 6, "y": 3, "w": 2, "h": 4, "i": "9", static: true },
-                { "x": 8, "y": 4, "w": 2, "h": 4, "i": "10", static: false },
-                { "x": 10, "y": 4, "w": 2, "h": 4, "i": "11", static: false },
-                { "x": 0, "y": 10, "w": 2, "h": 5, "i": "12", static: false },
-                { "x": 2, "y": 10, "w": 2, "h": 5, "i": "13", static: false },
-                { "x": 4, "y": 8, "w": 2, "h": 4, "i": "14", static: false },
-                { "x": 6, "y": 8, "w": 2, "h": 4, "i": "15", static: false },
-                { "x": 8, "y": 10, "w": 2, "h": 5, "i": "16", static: false },
-                { "x": 10, "y": 4, "w": 2, "h": 2, "i": "17", static: false },
-                { "x": 0, "y": 9, "w": 2, "h": 3, "i": "18", static: false },
-                { "x": 2, "y": 6, "w": 2, "h": 2, "i": "19", static: false },
-                { "x": 2, "y": 6, "w": 2, "h": 2, "i": "20", static: false },
-                { "x": 2, "y": 6, "w": 2, "h": 2, "i": "21", static: false },
-                { "x": 2, "y": 6, "w": 2, "h": 2, "i": "22", static: false },
-                
-            ],
-            draggable: true,
-            resizable: true,
-            index: 0
-        }
-    },
-    methods: {
-        itemTitle(item) {
-            let result = item.i;
-            if (item.static) {
-                result += " - Static";
-            }
-            return result;
-        }
+const canvasRef = ref(null);
+
+onMounted(() => {
+    const canvas = new fabric.Canvas('theCanvas');
+    canvasRef.value = canvas; // Store canvas reference for resizing
+    canvas.backgroundColor = '#000000';
+    canvas.renderAll();
+
+    const square = new fabric.Rect({
+        left: 50,
+        top: 50,
+        fill: 'blue',
+        width: 50,
+        height: 50,
+    });
+    canvas.add(square);
+
+    // Call resize function initially and on window resize
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', resizeCanvas);
+});
+
+function resizeCanvas() {
+    const canvas = canvasRef.value;
+    if (!canvas) return;
+
+    const outerCanvasContainer = document.getElementsByClassName('fabric-canvas-wrapper')[0];
+    if (!outerCanvasContainer) return;
+
+    // Define padding, more for mobile and less (or none) for desktop
+    const padding = window.innerWidth < 768 ? 20 : 40; // Example: 20px for mobile, 10px for desktop
+
+    // A4 aspect ratio
+    const a4Ratio = 297 / 210;
+
+    // Adjusted container dimensions considering padding
+    const containerWidth = outerCanvasContainer.clientWidth - padding * 2;
+    // Use the innerHeight to consider the viewport height, subtracting padding and an arbitrary value to ensure no scrolling
+    const containerHeight = Math.min(outerCanvasContainer.clientHeight, window.innerHeight - padding * 2 - 100);
+
+    // Calculate new canvas dimensions while maintaining A4 ratio
+    let newCanvasWidth = containerWidth;
+    let newCanvasHeight = newCanvasWidth * a4Ratio;
+
+    // Ensure the canvas height doesn't exceed the container height
+    if (newCanvasHeight > containerHeight) {
+        newCanvasHeight = containerHeight;
+        newCanvasWidth = newCanvasHeight / a4Ratio;
     }
+
+    // Update canvas dimensions
+    canvas.setDimensions({ width: newCanvasWidth, height: newCanvasHeight });
+
+    // Scale and reposition the canvas content
+    const scale = newCanvasWidth / 794; // Original A4 width in pixels
+    canvas.getObjects().forEach(obj => {
+        obj.set({
+            scaleX: obj.scaleX * scale,
+            scaleY: obj.scaleY * scale,
+            left: obj.left * scale + padding, // Adjust for new scale and padding
+            top: obj.top * scale + padding, // Adjust for new scale and padding
+        });
+    });
+
+    canvas.renderAll();
 }
 </script>
 
 <style scoped>
-.vue-grid-layout {
-    background: #eee;
+.fabric-canvas-wrapper {
+    width: 100%; /* Use the full width of the container */
+    height: 100vh; /* Optional: Adjust the height as needed */
+    display: flex; /* Center the canvas within the wrapper */
+    justify-content: center;
+    align-items: center;
 }
 
-.vue-grid-item:not(.vue-grid-placeholder) {
-    background: #ccc;
-    border: 1px solid black;
-}
-
-.vue-grid-item .resizing {
-    opacity: 0.9;
-}
-
-.vue-grid-item .static {
-    background: #cce;
-}
-
-.vue-grid-item .text {
-    font-size: 24px;
-    text-align: center;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    height: 100%;
-    width: 100%;
-}
-
-.vue-grid-item .no-drag {
-    height: 100%;
-    width: 100%;
-}
-
-.vue-grid-item .minMax {
-    font-size: 12px;
-}
-
-.vue-grid-item .add {
-    cursor: pointer;
-}
-
-.vue-draggable-handle {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 0;
-    left: 0;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><circle cx='5' cy='5' r='5' fill='#999999'/></svg>") no-repeat;
-    background-position: bottom right;
-    padding: 0 8px 8px 0;
-    background-repeat: no-repeat;
-    background-origin: content-box;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.resume-container {
-    width: 816px;
-    /* Approx. A4 width at 72 DPI */
-    min-height: 1054px;
-    background-size: cover;
-    background-position: center;
-    display: block;
-    margin: 0 auto;
-}
-
-.resume-div {
-  height: 100%;
+canvas {
+    display: block; /* Remove bottom margin/gap */
+    /* No need to set width/height here, it's set dynamically */
 }
 </style>
