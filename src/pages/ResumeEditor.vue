@@ -41,31 +41,31 @@ function resizeCanvas() {
     const outerCanvasContainer = document.getElementsByClassName('fabric-canvas-wrapper')[0];
     if (!outerCanvasContainer) return;
 
-    // Define padding, more for mobile and less (or none) for desktop
-    const padding = window.innerWidth < 768 ? 20 : 40; // Example: 20px for mobile, 10px for desktop
+    // Define padding dynamically: less for desktop, more for mobile
+    const padding = window.innerWidth < 768 ? 10 : 10; // Adjust these values as needed
 
     // A4 aspect ratio
     const a4Ratio = 297 / 210;
 
-    // Adjusted container dimensions considering padding
-    const containerWidth = outerCanvasContainer.clientWidth - padding * 2;
-    // Use the innerHeight to consider the viewport height, subtracting padding and an arbitrary value to ensure no scrolling
-    const containerHeight = Math.min(outerCanvasContainer.clientHeight, window.innerHeight - padding * 2 - 100);
+    // Calculate the available space considering padding
+    const availableWidth = outerCanvasContainer.clientWidth - padding * 2;
+    const availableHeight = Math.min(outerCanvasContainer.clientHeight, window.innerHeight) - padding * 2;
 
-    // Calculate new canvas dimensions while maintaining A4 ratio
-    let newCanvasWidth = containerWidth;
+    // Calculate new canvas dimensions while maintaining the A4 ratio
+    let newCanvasWidth = availableWidth;
     let newCanvasHeight = newCanvasWidth * a4Ratio;
 
-    // Ensure the canvas height doesn't exceed the container height
-    if (newCanvasHeight > containerHeight) {
-        newCanvasHeight = containerHeight;
+    // Check if the canvas height exceeds the available height
+    if (newCanvasHeight > availableHeight) {
+        // If it does, recalculate both width and height based on the available height
+        newCanvasHeight = availableHeight;
         newCanvasWidth = newCanvasHeight / a4Ratio;
     }
 
     // Update canvas dimensions
     canvas.setDimensions({ width: newCanvasWidth, height: newCanvasHeight });
 
-    // Scale and reposition the canvas content
+    // Adjust canvas content scale and position
     const scale = newCanvasWidth / 794; // Original A4 width in pixels
     canvas.getObjects().forEach(obj => {
         obj.set({
@@ -73,11 +73,11 @@ function resizeCanvas() {
             scaleY: obj.scaleY * scale,
             left: obj.left * scale + padding, // Adjust for new scale and padding
             top: obj.top * scale + padding, // Adjust for new scale and padding
-        });
+        }).setCoords(); // Update coordinates of the object's corners
     });
 
     canvas.renderAll();
-}
+} 
 </script>
 
 <style scoped>
