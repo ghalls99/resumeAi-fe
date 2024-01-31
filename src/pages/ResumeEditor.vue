@@ -49,7 +49,7 @@ function resizeCanvas(square) {
     if (!outerCanvasContainer) return;
 
     // Define padding dynamically
-    const padding = window.innerWidth < 768 ? 15 : 10;
+    const padding = window.innerWidth < 768 ? 20 : 25;
 
     // A4 aspect ratio
     const a4Ratio = 297 / 210;
@@ -94,7 +94,7 @@ function resizeCanvas(square) {
 <style scoped>
 .fabric-canvas-wrapper {
     width: 100%; /* Use the full width of the container */
-    height: 100vh; /* Optional: Adjust the height as needed */
+    height: 90vh; /* Optional: Adjust the height as needed */
     display: flex; /* Center the canvas within the wrapper */
     justify-content: center;
     align-items: center;
