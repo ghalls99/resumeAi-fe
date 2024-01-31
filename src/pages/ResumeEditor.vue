@@ -26,23 +26,30 @@ onMounted(() => {
     canvas.add(square);
 
     // Call resize function initially and on window resize
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(square);
+    window.addEventListener('resize', resizeCanvas(square));
 });
 
 onUnmounted(() => {
-    window.removeEventListener('resize', resizeCanvas);
+    window.removeEventListener('resize', resizeCanvas(null));
 });
 
-function resizeCanvas() {
+const originalSquare = {
+    left: 50,
+    top: 50,
+    width: 50,
+    height: 50,
+};
+
+function resizeCanvas(square) {
     const canvas = canvasRef.value;
     if (!canvas) return;
 
     const outerCanvasContainer = document.getElementsByClassName('fabric-canvas-wrapper')[0];
     if (!outerCanvasContainer) return;
 
-    // Define padding dynamically: less for desktop, more for mobile
-    const padding = window.innerWidth < 768 ? 10 : 10; // Adjust these values as needed
+    // Define padding dynamically
+    const padding = window.innerWidth < 768 ? 15 : 10;
 
     // A4 aspect ratio
     const a4Ratio = 297 / 210;
@@ -51,13 +58,12 @@ function resizeCanvas() {
     const availableWidth = outerCanvasContainer.clientWidth - padding * 2;
     const availableHeight = Math.min(outerCanvasContainer.clientHeight, window.innerHeight) - padding * 2;
 
-    // Calculate new canvas dimensions while maintaining the A4 ratio
+    // Calculate new canvas dimensions
     let newCanvasWidth = availableWidth;
     let newCanvasHeight = newCanvasWidth * a4Ratio;
 
-    // Check if the canvas height exceeds the available height
+    // Adjust dimensions based on available height
     if (newCanvasHeight > availableHeight) {
-        // If it does, recalculate both width and height based on the available height
         newCanvasHeight = availableHeight;
         newCanvasWidth = newCanvasHeight / a4Ratio;
     }
@@ -65,19 +71,24 @@ function resizeCanvas() {
     // Update canvas dimensions
     canvas.setDimensions({ width: newCanvasWidth, height: newCanvasHeight });
 
-    // Adjust canvas content scale and position
+    // Scale and reposition objects based on the original properties
     const scale = newCanvasWidth / 794; // Original A4 width in pixels
     canvas.getObjects().forEach(obj => {
-        obj.set({
-            scaleX: obj.scaleX * scale,
-            scaleY: obj.scaleY * scale,
-            left: obj.left * scale + padding, // Adjust for new scale and padding
-            top: obj.top * scale + padding, // Adjust for new scale and padding
-        }).setCoords(); // Update coordinates of the object's corners
+        const original = obj === square ? originalSquare : undefined; // Replace 'square' with your square object reference
+        if (original) {
+            obj.set({
+                left: original.left * scale + padding,
+                top: original.top * scale + padding,
+                scaleX: scale,
+                scaleY: scale,
+                width: original.width,
+                height: original.height,
+            }).setCoords(); // Update the object's coordinates
+        }
     });
 
     canvas.renderAll();
-} 
+}
 </script>
 
 <style scoped>
