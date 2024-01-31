@@ -13,21 +13,12 @@ const canvasRef = ref(null);
 onMounted(() => {
     const canvas = new fabric.Canvas('theCanvas');
     canvasRef.value = canvas; // Store canvas reference for resizing
-    canvas.backgroundColor = '#000000';
+    canvas.backgroundColor = '#F2F2F2';
     canvas.renderAll();
 
-    const square = new fabric.Textbox('Some text here', {
-        left: 500,
-        top: 50,
-        fill: 'blue',
-        width: 200,
-        height: 50,
-    });
-    canvas.add(square);
 
 
-
-    const stylesList = [{ title: { 'fontSize': 46,  } }, { text: { 'fontSize': 9 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
+    const stylesList = [{ title: { 'fontSize': 46, } }, { text: { 'fontSize': 9 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
     const template = {
         "name": { "style": "title", "left": 50, "top": 50, "width": 200, "height": 50 },
         "email": { "style": "text", "left": 500, "top": 50, "width": 200, "height": 50 },
@@ -54,7 +45,7 @@ onMounted(() => {
             return Object.keys(item)[0] === template[curr].style
         })
 
-        canvas.add(new fabric.Textbox(resumeData[curr] === '' ? 'no text found'  : resumeData[curr], {
+        canvas.add(new fabric.Textbox(resumeData[curr] === '' ? 'no text found' : resumeData[curr], {
             left: template[curr].left,
             top: template[curr].top,
             width: template[curr].width,
@@ -67,8 +58,8 @@ onMounted(() => {
 
 
     // Call resize function initially and on window resize
-    resizeCanvas(square);
-    window.addEventListener('resize', resizeCanvas(square));
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas());
 });
 
 onUnmounted(() => {
@@ -128,4 +119,5 @@ canvas {
     display: block;
     /* Remove bottom margin/gap */
     /* No need to set width/height here, it's set dynamically */
-}</style>
+}
+</style>
