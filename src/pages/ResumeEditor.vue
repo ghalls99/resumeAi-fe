@@ -10,23 +10,44 @@ import { fabric } from 'fabric';
 
 const canvasRef = ref(null);
 
+function adjustCanvasForHighDPI(canvas) {
+    let dpi = window.devicePixelRatio;
+    let styleHeight = +getComputedStyle(canvas.getElement()).getPropertyValue("height").slice(0, -2);
+    let styleWidth = +getComputedStyle(canvas.getElement()).getPropertyValue("width").slice(0, -2);
+
+    // Scale the canvas's drawing buffer to match the device's pixel ratio
+    canvas.getElement().setAttribute('width', styleWidth * dpi);
+    canvas.getElement().setAttribute('height', styleHeight * dpi);
+
+    let canvasWidth = canvas.getWidth();
+    let canvasHeight = canvas.getHeight();
+
+    // Adjust canvas size without affecting the drawing size
+    canvas.setDimensions({width: canvasWidth, height: canvasHeight});
+    canvas.getContext('2d').scale(dpi, dpi);
+}
+
 onMounted(() => {
     const canvas = new fabric.Canvas('theCanvas');
     canvasRef.value = canvas; // Store canvas reference for resizing
     canvas.backgroundColor = '#F2F2F2';
     canvas.renderAll();
 
+// Call the DPI adjustment function right after initializing the canvas
+    adjustCanvasForHighDPI(canvas);
 
+    // Setup a resize event listener to adjust the canvas when the window size changes
+    window.addEventListener('resize', () => adjustCanvasForHighDPI(canvas));
 
     const stylesList = [{ title: { 'fontSize': 46, } }, { text: { 'fontSize': 9 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
     const template = {
-        "name": { "style": "title", "left": 50, "top": 50, "width": 200, "height": 50 },
-        "email": { "style": "text", "left": 500, "top": 50, "width": 200, "height": 50 },
-        "address": { "style": "text", "left": 500, "top": 60, "width": 200, "height": 50 },
-        "state": { "style": "text", "left": 500, "top": 70, "width": 200, "height": 50 },
-        "role": { "style": "subtitle", "left": 50, "top": 150, "width": 200, "height": 50 },
-        "phone": { "style": "text", "left": 500, "top": 80, "width": 200, "height": 50 },
-        "bio": { "style": "text", "left": 50, "top": 300, "width": 500, "height": 50 },
+        "name": { "style": "title", "left": 50, "top": 50, "destkopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "email": { "style": "text", "left": 500, "top": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "address": { "style": "text", "left": 500, "top": 60, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "state": { "style": "text", "left": 500, "top": 70, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "role": { "style": "subtitle", "left": 50, "top": 150, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "phone": { "style": "text", "left": 500, "top": 80, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "bio": { "style": "text", "left": 50, "top": 300, "desktopWidth": 500, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
     }
 
     const resumeData = {
@@ -41,19 +62,36 @@ onMounted(() => {
         "bio": "Software engineer with 5 years of experience in business to business, business to customer, and saas product development. Has primarily focused on the creation of new features, alongside with the maintenance and the analysis of said features. Has built scalable data pipelines that streamline analysis processes, while creating algorithms that help normalize, clean, and store data for short term and long term use cases.",
     }
     Object.keys(template).reduce((prev, curr) => {
-        const style = stylesList.find((item) => {
-            return Object.keys(item)[0] === template[curr].style
-        })
-
-        canvas.add(new fabric.Textbox(resumeData[curr] === '' ? 'no text found' : resumeData[curr], {
-            left: template[curr].left,
-            top: template[curr].top,
-            width: template[curr].width,
-            height: template[curr].height,
+        const style = stylesList.find(item => item[template[curr].style]);
+        const text = new fabric.Textbox(resumeData[curr] || 'no text found', {
+            left: Math.round(template[curr].left), // Ensure integer values
+            top: Math.round(template[curr].top), // Ensure integer values
+            width: Math.round(template[curr].desktopWidth), // Ensure integer values
+            height: Math.round(template[curr].desktopHeight), // Ensure integer values
             fill: 'blue',
             ...style[template[curr].style]
-        }));
-    }, [])
+        });
+
+        // Adjust for high-DPI displays
+        text.set({
+            scaleX: window.devicePixelRatio,
+            scaleY: window.devicePixelRatio,
+            fontSize: text.fontSize * window.devicePixelRatio
+        });
+
+        canvas.add(text);
+
+
+    }, []);
+
+
+    canvas.add(new fabric.Textbox('TestText', {
+        left: 200,
+        top: 200,
+        width: 100,
+        height: 50,
+        fill: 'blue'
+    }))
 
 
 
@@ -65,6 +103,8 @@ onMounted(() => {
 onUnmounted(() => {
     window.removeEventListener('resize', resizeCanvas(null));
 });
+
+
 
 function resizeCanvas() {
     const canvas = canvasRef.value;
