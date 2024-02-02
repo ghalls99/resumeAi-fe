@@ -23,7 +23,7 @@ function adjustCanvasForHighDPI(canvas) {
     let canvasHeight = canvas.getHeight();
 
     // Adjust canvas size without affecting the drawing size
-    canvas.setDimensions({width: canvasWidth, height: canvasHeight});
+    canvas.setDimensions({ width: canvasWidth, height: canvasHeight });
     canvas.getContext('2d').scale(dpi, dpi);
 }
 
@@ -33,21 +33,21 @@ onMounted(() => {
     canvas.backgroundColor = '#F2F2F2';
     canvas.renderAll();
 
-// Call the DPI adjustment function right after initializing the canvas
+    // Call the DPI adjustment function right after initializing the canvas
     adjustCanvasForHighDPI(canvas);
 
     // Setup a resize event listener to adjust the canvas when the window size changes
     window.addEventListener('resize', () => adjustCanvasForHighDPI(canvas));
-
-    const stylesList = [{ title: { 'fontSize': 46, } }, { text: { 'fontSize': 9 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
+    const windowWidth = window.innerWidth
+    const stylesList = [{ title: { 'fontSize': window.innerWidth > 768 ? 25 : 10 } }, { text: { 'fontSize': 5 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
     const template = {
-        "name": { "style": "title", "left": 50, "top": 50, "destkopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "email": { "style": "text", "left": 500, "top": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "address": { "style": "text", "left": 500, "top": 60, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "state": { "style": "text", "left": 500, "top": 70, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "role": { "style": "subtitle", "left": 50, "top": 150, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "phone": { "style": "text", "left": 500, "top": 80, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "bio": { "style": "text", "left": 50, "top": 300, "desktopWidth": 500, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "name": { "style": "title", "left": 50, "top": 50, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 300, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "email": { "style": "text", "left": 500, "top": 50, "mobileLeft": 1000, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "address": { "style": "text", "left": 500, "top": 60, "mobileLeft": 1000, "mobileTop": 100, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "state": { "style": "text", "left": 500, "top": 70, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "role": { "style": "subtitle", "left": 50, "top": 150, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "phone": { "style": "text", "left": 500, "top": 80, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+        "bio": { "style": "text", "left": 50, "top": 300, "mobileLeft": 50, "mobileTop":  500, "desktopWidth": 500, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
     }
 
     const resumeData = {
@@ -63,15 +63,29 @@ onMounted(() => {
     }
     Object.keys(template).reduce((prev, curr) => {
         const style = stylesList.find(item => item[template[curr].style]);
-        const text = new fabric.Textbox(resumeData[curr] || 'no text found', {
-            left: Math.round(template[curr].left), // Ensure integer values
-            top: Math.round(template[curr].top), // Ensure integer values
-            width: Math.round(template[curr].desktopWidth), // Ensure integer values
-            height: Math.round(template[curr].desktopHeight), // Ensure integer values
-            fill: 'blue',
-            ...style[template[curr].style]
-        });
+        let text = undefined;
+        if (windowWidth > 768) {
+            text = new fabric.Textbox(resumeData[curr] || 'no text found', {
+                left: Math.round(template[curr].left), // Ensure integer values
+                top: Math.round(template[curr].top), // Ensure integer values
+                width:  Math.round(template[curr].desktopWidth),
+                height: Math.round(template[curr].desktopHeight), // Ensure integer values
+                fill: 'blue',
+                ...style[template[curr].style]
+            });
 
+
+        } else {
+            console.log('on mobile')
+            text = new fabric.Textbox(resumeData[curr] || 'no text found', {
+                left: Math.round(template[curr].mobileLeft), // Ensure integer values
+                top: Math.round(template[curr].mobileTop), // Ensure integer values
+                width: Math.round(template[curr].mobileWidth), // Ensure integer values
+                height: Math.round(template[curr].mobileHeight), // Ensure integer values
+                fill: 'blue',
+                ...style[template[curr].style]
+            });
+        }
         // Adjust for high-DPI displays
         text.set({
             scaleX: window.devicePixelRatio,
@@ -85,13 +99,7 @@ onMounted(() => {
     }, []);
 
 
-    canvas.add(new fabric.Textbox('TestText', {
-        left: 200,
-        top: 200,
-        width: 100,
-        height: 50,
-        fill: 'blue'
-    }))
+
 
 
 

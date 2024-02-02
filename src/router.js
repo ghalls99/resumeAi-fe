@@ -6,6 +6,7 @@ import SignInPage from './pages/SignInPage.vue';
 import VerificationPage from './pages/VerificationPage.vue';
 import JobDescriptionPage from './pages/JobDescriptionPage.vue';
 import ResumeEditor from './pages/ResumeEditor.vue';
+import SandboxEditor from './pages/SandboxEditor.vue';
 
 const routes = [
 	{path: '/register', component: RegisterPage},
@@ -19,6 +20,7 @@ const routes = [
 	},
 	{path: '/submit-job-description', component: JobDescriptionPage},
 	{path: '/resume-editor', component: ResumeEditor},
+	{path: '/sandbox-editor', component: SandboxEditor},
 ];
 
 const router = createRouter({
