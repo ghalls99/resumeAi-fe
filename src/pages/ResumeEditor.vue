@@ -1,171 +1,227 @@
 <template>
-    <div class="fabric-canvas-wrapper">
+    <div class="background">
+  
+      <div ref="fabricCanvasWrapper" class="fabric-canvas-wrapper">
         <canvas id="theCanvas"></canvas>
+      </div>
     </div>
-</template>
-
-<script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
-import { fabric } from 'fabric';
-
-const canvasRef = ref(null);
-
-function adjustCanvasForHighDPI(canvas) {
-    let dpi = window.devicePixelRatio;
-    let styleHeight = +getComputedStyle(canvas.getElement()).getPropertyValue("height").slice(0, -2);
-    let styleWidth = +getComputedStyle(canvas.getElement()).getPropertyValue("width").slice(0, -2);
-
-    // Scale the canvas's drawing buffer to match the device's pixel ratio
-    canvas.getElement().setAttribute('width', styleWidth * dpi);
-    canvas.getElement().setAttribute('height', styleHeight * dpi);
-
-    let canvasWidth = canvas.getWidth();
-    let canvasHeight = canvas.getHeight();
-
-    // Adjust canvas size without affecting the drawing size
-    canvas.setDimensions({ width: canvasWidth, height: canvasHeight });
-    canvas.getContext('2d').scale(dpi, dpi);
-}
-
-onMounted(() => {
-    const canvas = new fabric.Canvas('theCanvas');
-    canvasRef.value = canvas; // Store canvas reference for resizing
-    canvas.backgroundColor = '#F2F2F2';
-    canvas.renderAll();
-
-    // Call the DPI adjustment function right after initializing the canvas
-    adjustCanvasForHighDPI(canvas);
-
-    // Setup a resize event listener to adjust the canvas when the window size changes
-    window.addEventListener('resize', () => adjustCanvasForHighDPI(canvas));
-    const windowWidth = window.innerWidth
-    const stylesList = [{ title: { 'fontSize': window.innerWidth > 768 ? 25 : 10 } }, { text: { 'fontSize': 5 } }, { header: { 'fontSize': 9 } }, { subtitle: { 'fontSize': 9 } }]
+  </template>
+    
+  <script setup>
+  import { onMounted, ref } from 'vue';
+  import { fabric } from 'fabric';
+  
+  const fabricCanvasWrapper = ref(null);
+  let canvas = null;
+  
+  
+  onMounted(() => {
+    initializeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+  });
+  
+  function initializeCanvas() {
+    canvas = new fabric.Canvas('theCanvas')
+  
+  
+    canvas.setWidth(800)
+    canvas.setHeight(1123);
+  
+  
+  
+    const stylesList = [{ title: { 'fontSize': 40, } }, { text: { 'fontSize': 12 } }, { header: { 'fontSize': 12, 'fill': '#2079c7' } }, { subtitle: { 'fontSize': 16 } }]
     const template = {
-        "name": { "style": "title", "left": 50, "top": 50, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 300, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "email": { "style": "text", "left": 500, "top": 50, "mobileLeft": 1000, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "address": { "style": "text", "left": 500, "top": 60, "mobileLeft": 1000, "mobileTop": 100, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "state": { "style": "text", "left": 500, "top": 70, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "role": { "style": "subtitle", "left": 50, "top": 150, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "phone": { "style": "text", "left": 500, "top": 80, "mobileLeft": 50, "mobileTop": 50, "desktopWidth": 200, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
-        "bio": { "style": "text", "left": 50, "top": 300, "mobileLeft": 50, "mobileTop":  500, "desktopWidth": 500, "desktopHeight": 50, "mobileWidth": 200, "mobileHeight": 50 },
+      "name": { "style": "title", "left": 50, "top": 50, "width": 300, "height": 50, },
+      "email": { "style": "text", "left": 550, "top": 50, "width": 200, "height": 50, },
+      "address": { "style": "text", "left": 550, "top": 63, "width": 200, "height": 50, },
+      "state": { "style": "text", "left": 550, "top": 75, "width": 200, "height": 50, },
+      "role": { "style": "subtitle", "left": 50, "top": 100, "width": 200, "height": 50, },
+      "phone": { "style": "text", "left": 550, "top": 85, "width": 200, "height": 50, },
+      "bio": { "style": "text", "left": 50, "top": 230, "width": 400, "height": 200, },
+      "intro": { "style": "header", "left": 50, "top": 200, "width": 500, "height": 50, },
+      "companyName": { "style": "text", "left": 50, "top": 100, "width": 500, "height": 50, },
+      "companyRole": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
+      "period": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
+      "task": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
+  
+  
     }
-
+  
     const resumeData = {
-        "name": "Garrett Halls",
-        "email": "garrett@hallsnet.com",
-        "address": "Utah County",
-        "role": "Software Engineer",
-        "city": "Utah County",
-        "state": "Utah",
-        "postal": "",
-        "phone": "8014251650",
-        "bio": "Software engineer with 5 years of experience in business to business, business to customer, and saas product development. Has primarily focused on the creation of new features, alongside with the maintenance and the analysis of said features. Has built scalable data pipelines that streamline analysis processes, while creating algorithms that help normalize, clean, and store data for short term and long term use cases.",
-    }
-    Object.keys(template).reduce((prev, curr) => {
-        const style = stylesList.find(item => item[template[curr].style]);
-        let text = undefined;
-        if (windowWidth > 768) {
-            text = new fabric.Textbox(resumeData[curr] || 'no text found', {
-                left: Math.round(template[curr].left), // Ensure integer values
-                top: Math.round(template[curr].top), // Ensure integer values
-                width:  Math.round(template[curr].desktopWidth),
-                height: Math.round(template[curr].desktopHeight), // Ensure integer values
-                fill: 'blue',
-                ...style[template[curr].style]
-            });
-
-
-        } else {
-            console.log('on mobile')
-            text = new fabric.Textbox(resumeData[curr] || 'no text found', {
-                left: Math.round(template[curr].mobileLeft), // Ensure integer values
-                top: Math.round(template[curr].mobileTop), // Ensure integer values
-                width: Math.round(template[curr].mobileWidth), // Ensure integer values
-                height: Math.round(template[curr].mobileHeight), // Ensure integer values
-                fill: 'blue',
-                ...style[template[curr].style]
-            });
+      "name": "Garrett Halls",
+      "email": "garrett@hallsnet.com",
+      "address": "Utah County",
+      "role": "Software Engineer",
+      "city": "Utah County",
+      "state": "Utah",
+      "postal": "",
+      "intro": "INTRODUCTION",
+      "phone": "8014251650",
+      "bio": "Software engineer with 5 years of experience in business to business, business to customer, and saas product development. Has primarily focused on the creation of new features, alongside with the maintenance and the analysis of said features. Has built scalable data pipelines that streamline analysis processes, while creating algorithms that help normalize, clean, and store data for short term and long term use cases.",
+      "jobExperiences": [
+        {
+          "companyName": "LemonSqueezy",
+          "companyRole": "Contract Developer",
+          "period": "2023 - 2023",
+          "tasks": [
+            { task: "test" },
+            { task: "test2" },
+            { task: "test3" },
+          ]
+        },
+        {
+          "companyName": "Bullfrog Spas",
+          "companyRole": "Full Stack Developer",
+          "period": "2021 - 2022",
+          "tasks": [
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+          ]
+        },
+        {
+          "companyName": "PolicyScout ",
+          "companyRole": "Full Stack Developer",
+          "period": "2022 - 2023",
+          "tasks": [
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+            { task: "Migrated and consolidated the customer data from six different databases into the AWS ecosystem, reducing data storage costs by 80%." },
+          ]
         }
-        // Adjust for high-DPI displays
-        text.set({
-            scaleX: window.devicePixelRatio,
-            scaleY: window.devicePixelRatio,
-            fontSize: text.fontSize * window.devicePixelRatio
-        });
-
-        canvas.add(text);
-
-
-    }, []);
-
-
-
-
-
-
-    // Call resize function initially and on window resize
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas());
-});
-
-onUnmounted(() => {
-    window.removeEventListener('resize', resizeCanvas(null));
-});
-
-
-
-function resizeCanvas() {
-    const canvas = canvasRef.value;
-    if (!canvas) return;
-
-    const outerCanvasContainer = document.getElementsByClassName('fabric-canvas-wrapper')[0];
-    if (!outerCanvasContainer) return;
-
-    const padding = window.innerWidth < 768 ? 20 : 25;
-    const a4Ratio = 297 / 210;
-    const availableWidth = outerCanvasContainer.clientWidth - padding * 2;
-    const availableHeight = Math.min(outerCanvasContainer.clientHeight, window.innerHeight) - padding * 2;
-
-    let newCanvasWidth = availableWidth;
-    let newCanvasHeight = newCanvasWidth * a4Ratio;
-
-    if (newCanvasHeight > availableHeight) {
-        newCanvasHeight = availableHeight;
-        newCanvasWidth = newCanvasHeight / a4Ratio;
+      ],
     }
-
-    canvas.setDimensions({ width: newCanvasWidth, height: newCanvasHeight });
-
-    const scale = newCanvasWidth / 794; // Original A4 width in pixels
-    canvas.getObjects().forEach(obj => {
-        // Apply scaling and repositioning to all objects
-        obj.set({
-            left: obj.left * scale + padding,
-            top: obj.top * scale + padding,
-            scaleX: scale,
-            scaleY: scale,
-        }).setCoords(); // Update the object's coordinates
+  
+    function processResumeData(data, template) {
+      Object.keys(data).forEach((key) => {
+        // Check if the current item is an array (e.g., jobExperiences)
+  
+        if (Array.isArray(data[key])) {
+          console.log('running this')
+          handleArraySet(data[key])
+        }
+  
+  
+  
+  
+        /*if (Array.isArray(data[key])) {
+          data[key].forEach((item) => {
+            Object.keys(item).forEach((itemSet, index) => {
+              const drill = item[itemSet]
+  
+              console.log(`drill ${JSON.stringify(drill)}`)
+  
+              // Process each item in the array, e.g., a job experience
+              // You might want to adjust the template positions for each item
+              console.log(adjustedTemplate)
+              processResumeData(itemSet, adjustedTemplate);
+            })
+  
+          });
+        }*/ else {
+          // Handle simple properties here
+          if (template[key]) { // Ensure the template for this item exists
+            const style = stylesList.find(item => item[template[key].style]) || {};
+            const iTextSample = new fabric.Textbox(data[key] || 'no text found', {
+              left: Math.round(template[key].left), // Ensure integer values
+              top: Math.round(template[key].top), // Ensure integer values
+              width: Math.round(template[key].width), // Ensure integer values
+              height: Math.round(template[key].height), // Ensure integer values
+              ...style[template[key].style],
+            });
+  
+            canvas.add(iTextSample);
+          }
+        }
+      });
+    }
+  
+    function handleArraySet(array, startY = 350) {
+    let currentTop = startY;
+  
+    array.forEach((item, itemIndex) => {
+      const groupSpacing = 20; // Space between different job groups
+      const itemSpacing = 2; // Space between items within a group
+  
+      Object.keys(item).forEach((itemKey) => {
+        try {
+          // Handle nested arrays, like tasks within a job experience
+          if (Array.isArray(item[itemKey])) {
+            currentTop += groupSpacing; // Add space before starting a new group
+            currentTop = handleArraySet(item[itemKey], currentTop); // Recursively handle nested arrays, adjust 'currentTop' based on returned value
+            return;
+          }
+  
+          // Calculate the 'top' position based on the current item index and spacing
+          const style = stylesList.find(styleItem => styleItem[template[itemKey]?.style]) || {};
+          const iTextSample = new fabric.Textbox(item[itemKey] || 'no text found', {
+            left: Math.round(template[itemKey]?.left || 0),
+            top: currentTop, // Use the dynamically calculated 'top' position
+            width: Math.round(template[itemKey]?.width || 0),
+            height: Math.round(template[itemKey]?.height || 0),
+            ...style[template[itemKey]?.style],
+          });
+  
+          canvas.add(iTextSample);
+  
+          // Increment 'currentTop' for the next item, adding itemSpacing
+          currentTop += iTextSample.getScaledHeight() + itemSpacing;
+        } catch (error) {
+          console.error(`Failed processing item at index ${itemIndex} with key '${itemKey}': ${error}`);
+        }
+      });
+  
+      // Add extra spacing after each group is processed
+      currentTop += groupSpacing;
     });
-
-    canvas.renderAll();
-}
-</script>
-
-<style scoped>
-.fabric-canvas-wrapper {
-    width: 100%;
-    /* Use the full width of the container */
-    height: 90vh;
-    /* Optional: Adjust the height as needed */
-    display: flex;
-    /* Center the canvas within the wrapper */
-    justify-content: center;
-    align-items: center;
-}
-
-canvas {
-    display: block;
-    /* Remove bottom margin/gap */
-    /* No need to set width/height here, it's set dynamically */
-}
-</style>
+  
+    return currentTop; // Return the updated 'currentTop' for nested calls
+  }
+    /*function adjustTemplateForArrayItem(templateItem) {
+      console.log(`template item ${templateItem}`)
+      // This function should adjust the template positions for array items
+      // For example, you might want to increment the 'top' value for each item
+      const spacing = 100; // Adjust this based on your layout needs
+      return {
+        ...templateItem,
+        top: templateItem.top * spacing, // Increment 'top' for each item
+      };
+    }*/
+  
+    processResumeData(resumeData, template);
+  
+    resizeCanvas();
+  
+  
+  }
+  
+  function resizeCanvas() {
+    if (!fabricCanvasWrapper.value || !canvas) return;
+  
+    const ratio = canvas.getWidth() / canvas.getHeight();
+    const containerWidth = fabricCanvasWrapper.value.clientWidth;
+  
+    const scale = containerWidth / canvas.getWidth();
+    const zoom = canvas.getZoom() * scale;
+    canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
+    canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+  }
+  </script>
+    
+  <style scoped>
+  .background {
+    background-color: #F9FBFD;
+  }
+  
+  .fabric-canvas-wrapper {
+    margin: 0 auto;
+    max-width: 1000px;
+  
+    /* Your styles here */
+  }
+  
+  #theCanvas {
+    background-color: #ffffff;
+    border: .25px solid lightgrey;
+  }
+  </style>
