@@ -37,8 +37,8 @@
       "state": { "style": "text", "left": 550, "top": 75, "width": 200, "height": 50, },
       "role": { "style": "subtitle", "left": 50, "top": 100, "width": 200, "height": 50, },
       "phone": { "style": "text", "left": 550, "top": 85, "width": 200, "height": 50, },
-      "bio": { "style": "text", "left": 50, "top": 230, "width": 400, "height": 200, },
-      "intro": { "style": "header", "left": 50, "top": 200, "width": 500, "height": 50, },
+      "bio": { "style": "text", "left": 50, "top": 180, "width": 400, "height": 200, },
+      "intro": { "style": "header", "left": 50, "top": 150, "width": 500, "height": 50, },
       "companyName": { "style": "text", "left": 50, "top": 100, "width": 500, "height": 50, },
       "companyRole": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
       "period": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
@@ -136,7 +136,7 @@
       });
     }
   
-    function handleArraySet(array, startY = 350) {
+    function handleArraySet(array, startY = 300) {
     let currentTop = startY;
   
     array.forEach((item, itemIndex) => {
