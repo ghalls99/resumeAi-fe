@@ -114,10 +114,10 @@ function initializeCanvas() {
                 "degree": "Associate's",
                 "major": "General Studies",
                 "period": "2017 - 2019",
-                "summary": "Focused on Object Oriented programming while pursuing a General’s degree."
+                "summary": "Focused Son Object Oriented programming while pursuing a General’s degree."
             }
         ],
-        "rightSideSection": [
+        "skillSection": [
             { "skillTitle": "Languages", "list": [{ listItem: "C#" }, { listItem: "Python" }] },
             {
                 "skillTitle": "Frameworks & Libraries",
@@ -143,7 +143,7 @@ function initializeCanvas() {
         Object.keys(data).forEach((key) => {
             // Check if the current item is an array (e.g., jobExperiences)
             if (Array.isArray(data[key])) {
-                if (key === 'rightSideSection') {
+                if (key === 'skillSection') {
                     return handleArraySet(data[key], 150)
                 }
                 currentTop = handleArraySet(data[key], currentTop + 40)
