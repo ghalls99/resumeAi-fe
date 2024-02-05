@@ -16,19 +16,8 @@ import { fabric } from 'fabric';
 import jsPDF from 'jspdf';
 const fabricCanvasWrapper = ref(null);
 let canvas = null;
-let zoomStartScale;
-canvas.on({
-        'touch:gesture': function(e) {
-            if (e.e.touches && e.e.touches.length == 2) {
-                var point = new fabric.Point(e.self.x, e.self.y);
-                if (e.self.state == "start") {
-                    zoomStartScale = self.canvas.getZoom();
-                }
-                var delta = zoomStartScale * e.self.scale;
-                self.canvas.zoomToPoint(point, delta);
-            }
-        },
-    });
+let zoomStartScale = 1; // Starting scale for zoom gestures
+
 
 onMounted(() => {
     initializeCanvas();
@@ -41,6 +30,18 @@ function initializeCanvas() {
 
     canvas.setWidth(800)
     canvas.setHeight(1123);
+
+    canvas.on('touch:gesture', function(event) {
+        // Handle zoom only if 2 fingers are touching the screen
+        if (event.e.touches && event.e.touches.length === 2) {
+            var point = new fabric.Point(event.self.x, event.self.y);
+            if (event.self.state === 'start') {
+                zoomStartScale = canvas.getZoom();
+            }
+            var delta = zoomStartScale * event.self.scale;
+            canvas.zoomToPoint(point, delta);
+        }
+    });
 
     
     const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans' } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
