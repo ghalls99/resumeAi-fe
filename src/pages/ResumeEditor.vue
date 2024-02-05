@@ -17,6 +17,13 @@ import jsPDF from 'jspdf';
 const fabricCanvasWrapper = ref(null);
 let canvas = null;
 let zoomStartScale = 1; // Starting scale for zoom gestures
+let pausePanning;
+let currentX;
+let currentY;
+let xChange;
+let yChange;
+let lastX;
+let lastY;
 
 
 onMounted(() => {
@@ -31,15 +38,42 @@ function initializeCanvas() {
     canvas.setWidth(800)
     canvas.setHeight(1123);
 
-    canvas.on('touch:gesture', function(event) {
-        // Handle zoom only if 2 fingers are touching the screen
-        if (event.e.touches && event.e.touches.length === 2) {
-            var point = new fabric.Point(event.self.x, event.self.y);
-            if (event.self.state === 'start') {
-                zoomStartScale = canvas.getZoom();
+    canvas.on({
+        'touch:gesture': function(e) {
+            if (e.e.touches && e.e.touches.length == 2) {
+                pausePanning = true;
+                var point = new fabric.Point(e.self.x, e.self.y);
+                if (e.self.state == "start") {
+                    zoomStartScale = self.canvas.getZoom();
+                }
+                var delta = zoomStartScale * e.self.scale;
+                self.canvas.zoomToPoint(point, delta);
+                pausePanning = false;
             }
-            var delta = zoomStartScale * event.self.scale;
-            canvas.zoomToPoint(point, delta);
+        },
+        'object:selected': function() {
+            pausePanning = true;
+        },
+        'selection:cleared': function() {
+            console.log('cleared')
+            pausePanning = false;
+        },
+        'touch:drag': function(e) {
+            console.log('something')
+            if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
+                currentX = e.e.layerX;
+                currentY = e.e.layerY;
+                xChange = currentX - lastX;
+                yChange = currentY - lastY;
+
+                if( (Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
+                    var delta = new fabric.Point(xChange, yChange);
+                    canvas.relativePan(delta);
+                }
+
+                lastX = e.e.layerX;
+                lastY = e.e.layerY;
+            }
         }
     });
 
