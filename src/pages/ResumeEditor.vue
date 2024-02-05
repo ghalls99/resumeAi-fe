@@ -1,8 +1,10 @@
 <template>
-    <div class="background">
-
+    <div class="background ">
+        <div class="pt-5 pb-3 d-flex justify-content-end">
+            <button class="btn btn-primary" @click="exportToPdf()">Export</button>
+        </div>
         <div ref="fabricCanvasWrapper" class="fabric-canvas-wrapper">
-            <canvas id="theCanvas"></canvas>
+            <canvas id="theCanvas" ></canvas>
         </div>
     </div>
 </template>
@@ -10,7 +12,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { fabric } from 'fabric';
-
+import jsPDF from 'jspdf';
 const fabricCanvasWrapper = ref(null);
 let canvas = null;
 
@@ -29,28 +31,26 @@ function initializeCanvas() {
 
 
 
-    const stylesList = [{ title: { 'fontSize': 40, } }, { text: { 'fontSize': 12 } }, { header: { 'fontSize': 12, 'fill': '#2079c7' } }, { subtitle: { 'fontSize': 16 } }]
+    const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans'  } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
     const template = {
         "name": { "style": "title", "left": 50, "top": 50, "width": 300, "height": 50, },
-        "email": { "style": "text", "left": 550, "top": 50, "width": 200, "height": 50, },
-        "address": { "style": "text", "left": 550, "top": 63, "width": 200, "height": 50, },
-        "state": { "style": "text", "left": 550, "top": 75, "width": 200, "height": 50, },
-        "role": { "style": "subtitle", "left": 50, "top": 100, "width": 200, "height": 50, },
-        "phone": { "style": "text", "left": 550, "top": 85, "width": 200, "height": 50, },
+        "email": { "style": "text", "left": 550, "top": 50, "width": 100, "height": 50, },
+        "address": { "style": "text", "left": 550, "top": 63, "width": 100, "height": 50, },
+        "state": { "style": "text", "left": 550, "top": 75, "width": 100, "height": 50, },
+        "role": { "style": "subtitle", "left": 50, "top": 100, "width": 150, "height": 50, },
+        "phone": { "style": "text", "left": 550, "top": 85, "width": 100, "height": 50, },
         "bio": { "style": "text", "left": 50, "top": 180, "width": 400, "height": 200, },
-        "intro": { "style": "header", "left": 50, "top": 150, "width": 500, "height": 50, },
-        "companyName": { "style": "text", "left": 50, "top": 100, "width": 500, "height": 50, },
-        "companyRole": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
-        "period": { "style": "text", "left": 50, "top": 200, "width": 500, "height": 50, },
-        "task": { "style": "text", "left": 50, "top": 200, "width": 400, "height": 50, },
-        "university": { "style": "text", "left": 50, "top": 200, "width": 400, "height": 50, },
-        "degree": { "style": "text", "left": 50, "top": 200, "width": 400, "height": 50, },
-        "major": { "style": "text", "left": 50, "top": 200, "width": 400, "height": 50, },
-        "summary": { "style": "text", "left": 50, "top": 200, "width": 400, "height": 50, },
-        "skillTitle": { "style": "header", "left": 550, "top": 120, "width": 400, "height": 50, },
-        "listItem": { "style": "text", "left": 550, "top": 10, "width": 400, "height": 50, },
-
-
+        "intro": { "style": "header", "left": 50, "top": 150, "width": 100, "height": 50, },
+        "companyName": { "style": "subHeader", "left": 50, "top": 100, "width": 100, "height": 50, },
+        "companyRole": { "style": "text", "left": 50, "top": 200, "width": 100, "height": 50, },
+        "period": { "style": "text", "left": 50, "top": 200, "width": 100, "height": 50, },
+        "task": { "style": "text", "left": 60, "top": 200, "width": 400, "height": 50, },
+        "university": { "style": "subHeader", "left": 50, "top": 200, "width": 300, "height": 50, },
+        "degree": { "style": "text", "left": 50, "top": 200, "width": 300, "height": 50, },
+        "major": { "style": "text", "left": 50, "top": 200, "width": 300, "height": 50, },
+        "summary": { "style": "text", "left": 50, "top": 200, "width": 300, "height": 50, },
+        "skillTitle": { "style": "header", "left": 550, "top": 120, "width": 300, "height": 50, },
+        "listItem": { "style": "text", "left": 550, "top": 10, "width": 300, "height": 50, },
 
     }
 
@@ -63,10 +63,12 @@ function initializeCanvas() {
         "state": "Utah",
         "postal": "",
         "intro": "INTRODUCTION",
+        "educationTitle": "EDUCATION",
         "phone": "8014251650",
         "bio": "Software engineer with 5 years of experience in business to business, business to customer, and saas product development. Has primarily focused on the creation of new features, alongside with the maintenance and the analysis of said features. Has built scalable data pipelines that streamline analysis processes, while creating algorithms that help normalize, clean, and store data for short term and long term use cases.",
         "jobExperiences": [
             {
+                "intro": 'JOB EXPERIENCES',
                 "companyName": "LemonSqueezy",
                 "companyRole": "Contract Developer",
                 "period": "2023 - 2023",
@@ -87,7 +89,7 @@ function initializeCanvas() {
                 ]
             },
             {
-                "companyName": "PolicyScout ",
+                "companyName": "Really long string of text that has no value or meaning",
                 "companyRole": "Full Stack Developer",
                 "period": "2022 - 2023",
                 "tasks": [
@@ -99,6 +101,7 @@ function initializeCanvas() {
         ],
         "education": [
             {
+                "intro": 'EDUCATION',
                 "university": "Utah Valley University",
                 "degree": "Bachelor's",
                 "major": "Web Design and Development",
@@ -114,22 +117,22 @@ function initializeCanvas() {
             }
         ],
         "rightSideSection": [
-            { "skillTitle": "Languages", "list": [{listItem: "C#"}, {listItem:"Python"}] },
+            { "skillTitle": "Languages", "list": [{ listItem: "C#" }, { listItem: "Python" }] },
             {
                 "skillTitle": "Frameworks & Libraries",
-                "list": [{listItem: "C#"}, {listItem:"Python"}]
+                "list": [{ listItem: "C#" }, { listItem: "Python" }]
             },
             {
                 "skillTitle": "Database Technologies",
-                "list": [{listItem: "C#"}, {listItem:"Python"}]
+                "list": [{ listItem: "C#" }, { listItem: "Python" }]
             },
             {
                 "skillTitle": "Design Tools",
-                "list": [{listItem: "C#"}, {listItem:"Python"}]
+                "list": [{ listItem: "C#" }, { listItem: "Python" }]
             },
             {
                 "skillTitle": "Other Skills",
-                "list": [{listItem: "C#"}, {listItem:"Python"}]
+                "list": [{ listItem: "C#" }, { listItem: "Python" }]
             }
         ]
     }
@@ -139,26 +142,17 @@ function initializeCanvas() {
         Object.keys(data).forEach((key) => {
             // Check if the current item is an array (e.g., jobExperiences)
             if (Array.isArray(data[key])) {
-                console.log('running this')
-                if(key === 'rightSideSection') {
+                if (key === 'rightSideSection') {
                     return handleArraySet(data[key], 150)
                 }
-                currentTop = handleArraySet(data[key], currentTop)
+                currentTop = handleArraySet(data[key], currentTop + 40)
             }
             else {
                 // Handle simple properties here
                 if (template[key]) { // Ensure the template for this item exists
-                    const style = stylesList.find(item => item[template[key].style]) || {};
-                    const iTextSample = new fabric.Textbox(data[key] || 'no text found', {
-                        left: Math.round(template[key].left), // Ensure integer values
-                        top: Math.round(template[key].top), // Ensure integer values
-                        width: Math.round(template[key].width), // Ensure integer values
-                        height: Math.round(template[key].height), // Ensure integer values
-                        ...style[template[key].style],
-                    });
-
-                    canvas.add(iTextSample);
-                    currentTop = iTextSample.getScaledHeight() + 200
+                    const textBox = createTextBox(data[key], key, null, template, stylesList)
+                    canvas.add(textBox);
+                    currentTop = textBox.getScaledHeight() + 160
                 }
             }
         });
@@ -168,39 +162,47 @@ function initializeCanvas() {
         let currentTop = startY;
 
         array.forEach((item, itemIndex) => {
+
             // Apply groupSpacing only between job sections, not between tasks
             if (itemIndex > 0) { // Check if it's not the first job section
                 const groupSpacing = 20; // Space between different job groups
                 currentTop += groupSpacing;
             }
 
-            const itemSpacing = 2; // Space between items within a group
-            const taskSpacing = 2; // Tighter spacing specifically for tasks within a job
+            const itemSpacing = 5; // Space between items within a group
+            const taskSpacing = -10; // Tighter spacing specifically for tasks within a job
+
 
             Object.keys(item).forEach((itemKey) => {
+                if (itemKey === 'list') {
+                    // Concatenate listItem values
+                    const concatenatedListItems = item[itemKey].map(listItem => listItem.listItem).join(', ');
+
+                    const textBox = createTextBox(concatenatedListItems, 'listItem', currentTop, template, stylesList)
+
+                    canvas.add(textBox);
+                    currentTop += textBox.getScaledHeight() + 10; // Adjust spacing as needed
+                    return;
+                }
                 try {
                     // Handle nested arrays, like tasks within a job experience
                     if (Array.isArray(item[itemKey])) {
-                        currentTop += 1; // Use taskSpacing before starting tasks for tighter grouping
                         currentTop = handleArraySet(item[itemKey], currentTop); // Recursively handle nested arrays
                         return;
                     }
 
-                    // Calculate the 'top' position based on the current item index and spacing
-                    const style = stylesList.find(styleItem => styleItem[template[itemKey]?.style]) || {};
-                    const iTextSample = new fabric.Textbox(item[itemKey] || 'no text found', {
-                        left: Math.round(template[itemKey]?.left || 0),
-                        top: currentTop, // Use the dynamically calculated 'top' position
-                        width: Math.round(template[itemKey]?.width || 0),
-                        height: Math.round(template[itemKey]?.height || 0),
-                        ...style[template[itemKey]?.style],
-                    });
+                    if (itemKey === 'task') {
+                        item[itemKey] = `• ${item[itemKey]}`
+                    }
 
-                    canvas.add(iTextSample);
+                    const textBox = createTextBox(item[itemKey], itemKey, currentTop, template, stylesList)
+                    canvas.add(textBox);
 
                     // Increment 'currentTop' for the next item
                     // Use taskSpacing for tasks within the same job for tighter grouping
-                    currentTop += iTextSample.getScaledHeight() + (Array.isArray(item[itemKey]) ? taskSpacing : itemSpacing);
+                    const isArray = Array.isArray(item[itemKey])
+                    console.log(`${isArray}`)
+                    currentTop += textBox.getScaledHeight() + (itemKey === 'task' ? taskSpacing : itemSpacing);
                 } catch (error) {
                     console.error(`Failed processing item at index ${itemIndex} with key '${itemKey}': ${error}`);
                 }
@@ -227,6 +229,40 @@ function resizeCanvas() {
     const zoom = canvas.getZoom() * scale;
     canvas.setDimensions({ width: containerWidth, height: containerWidth / ratio });
     canvas.setViewportTransform([zoom, 0, 0, zoom, 0, 0]);
+}
+
+function createTextBox(text, key, currentTop, template, stylesList) {
+    const templateConfig = template[key] || {};
+    const style = stylesList.find(styleItem => styleItem[templateConfig.style]) || {};
+
+    return new fabric.Textbox(text, {
+        left: Math.round(templateConfig.left || 0),
+        top: Math.round(currentTop || templateConfig.top || 0),
+        width: Math.round(templateConfig.width || 0),
+        height: Math.round(templateConfig.height || 0),
+        ...style[templateConfig.style],
+    });
+}
+
+function exportToPdf () {
+   // only jpeg is supported by jsPDF
+   var imgData = canvas.toDataURL("image/jpeg", 1.0);
+  var pdf = new jsPDF();
+
+  let width = canvas.width
+  let height = canvas.height
+ //set the orientation
+ if(width > height){
+      pdf = new jsPDF('l', 'px', [width, height]);
+    }
+    else{
+      pdf = new jsPDF('p', 'px', [height, width]);
+    }
+    //then we get the dimensions from the 'pdf' file itself
+    width = pdf.internal.pageSize.getWidth();
+    height = pdf.internal.pageSize.getHeight();
+    pdf.addImage(imgData, 'PNG', 0, 0,width,height);
+    pdf.save("download.pdf");
 }
 </script>
     
