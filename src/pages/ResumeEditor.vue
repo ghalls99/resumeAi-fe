@@ -16,7 +16,7 @@ import { fabric } from 'fabric';
 import jsPDF from 'jspdf';
 const fabricCanvasWrapper = ref(null);
 let canvas = null;
-
+let zoomStartScale;
 
 onMounted(() => {
     initializeCanvas();
@@ -30,7 +30,24 @@ function initializeCanvas() {
     canvas.setWidth(800)
     canvas.setHeight(1123);
 
+    canvas.on('touch:gesture', function (event) {
+    // Handle zoom only if 2 fingers are touching the screen
+    if (event.e.touches && event.e.touches.length === 2) {
+      // Point where the gesture is centered
+      const point = new fabric.Point(event.e.touches[0].clientX, event.e.touches[0].clientY);
 
+      if (event.self.state === 'start') {
+        // Remember the starting scale when the gesture starts
+        zoomStartScale = canvas.getZoom();
+      }
+
+      // Calculate the new zoom level based on the gesture's scale
+      const delta = zoomStartScale * event.self.scale;
+
+      // Perform the zoom action centered on the pinch point
+      canvas.zoomToPoint(point, delta);
+    }
+  });
 
     const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans' } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
     const template = {
