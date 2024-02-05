@@ -14,16 +14,10 @@
 import { onMounted, ref } from 'vue';
 import { fabric } from 'fabric';
 import jsPDF from 'jspdf';
+import Hammer from 'hammerjs';
+
 const fabricCanvasWrapper = ref(null);
 let canvas = null;
-let zoomStartScale = 1; // Starting scale for zoom gestures
-let pausePanning;
-let currentX;
-let currentY;
-let xChange;
-let yChange;
-let lastX;
-let lastY;
 
 
 onMounted(() => {
@@ -38,46 +32,28 @@ function initializeCanvas() {
     canvas.setWidth(800)
     canvas.setHeight(1123);
 
-    canvas.on({
-        'touch:gesture': function(e) {
-            if (e.e.touches && e.e.touches.length == 2) {
-                pausePanning = true;
-                var point = new fabric.Point(e.self.x, e.self.y);
-                if (e.self.state == "start") {
-                    zoomStartScale = self.canvas.getZoom();
-                }
-                var delta = zoomStartScale * e.self.scale;
-                self.canvas.zoomToPoint(point, delta);
-                pausePanning = false;
-            }
-        },
-        'object:selected': function() {
-            pausePanning = true;
-        },
-        'selection:cleared': function() {
-            console.log('cleared')
-            pausePanning = false;
-        },
-        'touch:drag': function(e) {
-            console.log('something')
-            if (pausePanning == false && undefined != e.e.layerX && undefined != e.e.layerY) {
-                currentX = e.e.layerX;
-                currentY = e.e.layerY;
-                xChange = currentX - lastX;
-                yChange = currentY - lastY;
+    // Initialize Hammer.js on the canvas element
+    const hammerManager = new Hammer.Manager(canvas.upperCanvasEl);
 
-                if( (Math.abs(currentX - lastX) <= 50) && (Math.abs(currentY - lastY) <= 50)) {
-                    var delta = new fabric.Point(xChange, yChange);
-                    canvas.relativePan(delta);
-                }
+    // Enable pinch and pan gestures
+    hammerManager.add(new Hammer.Pinch());
+    hammerManager.add(new Hammer.Pan({ threshold: 0, pointers: 0 }));
 
-                lastX = e.e.layerX;
-                lastY = e.e.layerY;
-            }
+    let lastScale = 1;
+
+    hammerManager.on('pinchstart pinchmove', function (e) {
+        if (e.type === 'pinchstart') {
+            lastScale = 1;
         }
-    });
 
-    
+        const currentScale = e.scale;
+        const deltaScale = currentScale - lastScale;
+
+        const zoom = canvas.getZoom();
+        canvas.zoomToPoint({ x: e.center.x, y: e.center.y }, zoom + deltaScale);
+        lastScale = currentScale;
+
+    });
     const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans' } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
     const template = {
         "name": { "style": "title", "left": 50, "top": 50, "width": 300, "height": 50, },
