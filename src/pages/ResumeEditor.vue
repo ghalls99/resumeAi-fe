@@ -1,10 +1,11 @@
 <template>
     <div class="background ">
-        <div class="pt-5 pb-3 d-flex justify-content-end">
+        
+        <div ref="fabricCanvasWrapper" class="fabric-canvas-wrapper">
+            <div class="pt-5 pb-3 d-flex justify-content-end">
             <button class="btn btn-primary" @click="exportToPdf()">Export</button>
         </div>
-        <div ref="fabricCanvasWrapper" class="fabric-canvas-wrapper">
-            <canvas id="theCanvas" ></canvas>
+            <canvas id="theCanvas"></canvas>
         </div>
     </div>
 </template>
@@ -31,7 +32,7 @@ function initializeCanvas() {
 
 
 
-    const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans'  } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
+    const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans' } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
     const template = {
         "name": { "style": "title", "left": 50, "top": 50, "width": 300, "height": 50, },
         "email": { "style": "text", "left": 550, "top": 50, "width": 100, "height": 50, },
@@ -244,26 +245,87 @@ function createTextBox(text, key, currentTop, template, stylesList) {
     });
 }
 
-function exportToPdf () {
-   // only jpeg is supported by jsPDF
-   var imgData = canvas.toDataURL("image/jpeg", 1.0);
-  var pdf = new jsPDF();
+function exportToPdf() {
+    let width = canvas.width;
+    let height = canvas.height;
 
-  let width = canvas.width
-  let height = canvas.height
- //set the orientation
- if(width > height){
-      pdf = new jsPDF('l', 'px', [width, height]);
-    }
-    else{
-      pdf = new jsPDF('p', 'px', [height, width]);
-    }
-    //then we get the dimensions from the 'pdf' file itself
+    // Determine the orientation based on canvas dimensions
+    const orientation = width > height ? 'l' : 'p';
+    var pdf = new jsPDF(orientation, 'px', [width, height]);
+
+    // Only JPEG is supported by jsPDF for better performance
+
+    // First add texts
+    canvas.getObjects().forEach((obj) => {
+        if (obj.type === 'text') {
+            const size = obj.fontSize * 0.75; // Convert pixels to points
+            pdf.setFontSize(size);
+            const textPosition = obj.calcTransformMatrix();
+            pdf.text(obj.text, textPosition[4], textPosition[5], {
+                baseline: 'top',
+                angle: -obj.angle,
+            });
+        }
+    });
+
+    // Get the dimensions from the PDF to ensure the image fits within the page
     width = pdf.internal.pageSize.getWidth();
     height = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'PNG', 0, 0,width,height);
+
+    const highQuality = exportHighQualityImage(canvas, 2)
+
+    // Add the canvas image to the PDF
+    pdf.addImage(highQuality, 'JPEG', 0, 0, width, height);
+
+    // Save the PDF
     pdf.save("download.pdf");
 }
+
+function exportHighQualityImage(canvas, pixelRatio) {
+    const originalDimensions = { width: canvas.width, height: canvas.height };
+
+    // Resize the canvas to the desired pixel ratio
+    canvas.setDimensions({
+        width: originalDimensions.width * pixelRatio,
+        height: originalDimensions.height * pixelRatio
+    });
+
+    // Scale all the canvas contents by the same pixel ratio
+    canvas.getObjects().forEach((obj) => {
+        const scaleX = obj.scaleX;
+        const scaleY = obj.scaleY;
+        const left = obj.left;
+        const top = obj.top;
+
+        const tempScaleX = scaleX * pixelRatio;
+        const tempScaleY = scaleY * pixelRatio;
+        const tempLeft = left * pixelRatio;
+        const tempTop = top * pixelRatio;
+
+        obj.set({ scaleX: tempScaleX, scaleY: tempScaleY, left: tempLeft, top: tempTop });
+        obj.setCoords();
+    });
+    // Export the canvas as a data URL
+    const dataURL = canvas.toDataURL({
+        format: 'img/jpeg',
+        quality: 1
+    });
+
+    // Reset the canvas to its original dimensions and re-scale the objects
+    canvas.setDimensions(originalDimensions);
+    canvas.getObjects().forEach((obj) => {
+        obj.set({
+            scaleX: obj.scaleX / pixelRatio,
+            scaleY: obj.scaleY / pixelRatio,
+            left: obj.left / pixelRatio,
+            top: obj.top / pixelRatio
+        });
+        obj.setCoords();
+    });
+    // Use the data URL as needed (e.g., to display or download the image)
+    return dataURL;
+}
+
 </script>
     
 <style scoped>
