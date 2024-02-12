@@ -53,7 +53,42 @@ function initializeCanvas() {
         canvas.zoomToPoint({ x: e.center.x, y: e.center.y }, zoom + deltaScale);
         lastScale = currentScale;
 
+
     });
+
+
+    canvas.on('object:moving', function(event) {
+    var obj = event.target;
+
+    // Padding or boundary offset
+    var padding = 0;
+
+    // Get object's bounding box
+    var objBoundingBox = obj.getBoundingRect();
+
+    // Calculate the object's new boundaries considering padding
+    var topEdge = padding;
+    var leftEdge = padding;
+    var rightEdge = canvas.getWidth() - objBoundingBox.width - padding;
+    var bottomEdge = canvas.getHeight() - objBoundingBox.height - padding;
+
+    // Check and correct the object's position
+    if (objBoundingBox.top < topEdge) {
+        obj.set('top', topEdge);
+    }
+    if (objBoundingBox.left < leftEdge) {
+        obj.set('left', leftEdge);
+    }
+    if (objBoundingBox.top + objBoundingBox.height > canvas.getHeight() - padding) {
+        obj.set('top', bottomEdge);
+    }
+    if (objBoundingBox.left + objBoundingBox.width > canvas.getWidth() - padding) {
+        obj.set('left', rightEdge);
+    }
+
+    obj.setCoords(); // Update object coordinates after correction
+});
+
     const stylesList = [{ title: { 'fontSize': 40, 'fontFamily': 'Open Sans' } }, { text: { 'fontSize': 10, 'fontFamily': 'Open Sans', 'fontWeight': 300 } }, { header: { 'fontSize': 12, 'fill': '#2079c7', 'fontFamily': 'Open Sans' } }, { subtitle: { 'fontSize': 16, 'fontFamily': 'Open Sans' } }, { subHeader: { 'fontSize': 10, 'fontWeight': 400, 'fontFamily': 'Open Sans' } }]
     const template = {
         "name": { "style": "title", "left": 50, "top": 50, "width": 300, "height": 50, },
@@ -91,7 +126,7 @@ function initializeCanvas() {
         "bio": "Software engineer with 5 years of experience in business to business, business to customer, and saas product development. Has primarily focused on the creation of new features, alongside with the maintenance and the analysis of said features. Has built scalable data pipelines that streamline analysis processes, while creating algorithms that help normalize, clean, and store data for short term and long term use cases.",
         "jobExperiences": [
             {
-                "intro": 'JOB EXPERIENCES',
+     
                 "companyName": "LemonSqueezy",
                 "companyRole": "Contract Developer",
                 "period": "2023 - 2023",
@@ -124,7 +159,6 @@ function initializeCanvas() {
         ],
         "education": [
             {
-                "intro": 'EDUCATION',
                 "university": "Utah Valley University",
                 "degree": "Bachelor's",
                 "major": "Web Design and Development",
