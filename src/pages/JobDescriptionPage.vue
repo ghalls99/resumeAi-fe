@@ -15,6 +15,9 @@
       Generate Resume
     </button>
     <button v-if="generatedResume">Download Now</button>
+    <div>
+      <button @click="signInWithGoogle">Sign in with Google</button>
+    </div>
   </div>
 </template>
 
@@ -67,6 +70,18 @@
         }
       };
 
+      function signInWithGoogle() {
+        const clientId =
+          "346581013646-45pjpvl2jlhpr79pcnq0edb0p5d6lt28.apps.googleusercontent.com";
+        const redirectUri =
+          "https://zoo69sfavg.execute-api.us-east-1.amazonaws.com/dev/google-oauth"; // This should be the URL to your backend endpoint that handles the OAuth flow
+        const scope = "https://www.googleapis.com/auth/documents";
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&access_type=offline&prompt=consent`;
+
+        // Redirect the user to the Google sign-in page
+        window.location.href = authUrl;
+      }
+
       function wait(seconds) {
         return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
       }
@@ -100,6 +115,7 @@
         jobDescription,
         generatedResume,
         downloadPDF,
+        signInWithGoogle,
       };
     },
 
