@@ -33,7 +33,7 @@
 <template>
   <div class="container">
     <nav class="navbar navbar-expand-lg navbar-light justify-content-lg-around">
-      <a class="navbar-brand" href="/">ResumeAI</a>
+      <a class="navbar-brand" href="/">AiresAI</a>
       <button
         class="navbar-toggler"
         type="button"
